@@ -22,7 +22,7 @@ class PetstoreEndpoint[F[_]: Sync](petstoreService: PetstoreService[F]) extends 
     HttpService {
       case req @ POST -> Root / "pets" =>
         req.decode[NewPet] { newPet =>
-          petstoreService.createPet(newPet).flatMap(_ => Ok())
+          petstoreService.createPet(newPet).flatMap(_ => Created())
         }
       case GET -> Root / "pets" :? Limit(limit) =>
         petstoreService.getPets(limit).flatMap(Ok(_))
