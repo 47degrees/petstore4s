@@ -50,7 +50,7 @@ object PetstoreClientSpec {
     (for {
       service <- MemoryPetstoreService[IO](pets)
       result <- test(
-        PetstoreHttpClient(
+        PetstoreHttpClient.build(
           Client.fromHttpService(PetstoreEndpoint(service)),
           Uri.unsafeFromString("")
         ))

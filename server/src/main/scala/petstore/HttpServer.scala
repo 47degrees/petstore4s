@@ -20,4 +20,4 @@ class HttpServer[F[_]: Effect](petstoreService: F[PetstoreService[F]])(implicit 
 }
 
 import ExecutionContext.Implicits.global
-object MemoryServerApp extends HttpServer[IO](MemoryPetstoreService(List.empty))
+object MemoryServerApp extends HttpServer[IO](MemoryPetstoreService())

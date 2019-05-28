@@ -19,6 +19,6 @@ object MemoryPetstoreService {
     def getPet(id: Long): F[Option[Pet]] = ref.get.map(_.find(_.id == id))
   }
 
-  def apply[F[_]: ConcurrentEffect](init: List[Pet]): F[PetstoreService[F]] =
+  def apply[F[_]: ConcurrentEffect](init: List[Pet] = List.empty): F[PetstoreService[F]] =
     Ref[F, List[Pet]](init).map(MemoryPetstoreService.build[F])
 }

@@ -19,7 +19,7 @@ object PetstoreHttpClient {
   implicit val newPetDecoder: Encoder[NewPet] = deriveEncoder[NewPet]
   implicit val petDecoder: Decoder[Pet]       = deriveDecoder[Pet]
 
-  def apply[F[_]: Effect](client: Client[F], baseUrl: Uri): PetstoreClient[F] = new PetstoreClient[F] {
+  def build[F[_]: Effect](client: Client[F], baseUrl: Uri): PetstoreClient[F] = new PetstoreClient[F] {
     implicit val newPetEntity: EntityEncoder[F, NewPet]  = jsonEncoderOf[F, NewPet]
     implicit val petEntity: EntityDecoder[F, Pet]        = jsonOf[F, Pet]
     implicit val petsEntity: EntityDecoder[F, List[Pet]] = jsonOf[F, List[Pet]]
@@ -41,8 +41,7 @@ object PetstoreHttpClient {
     }
   }
 
-  def createClient[F[_]: ConcurrentEffect](baseUrl: Uri)(
-      implicit executionContext: ExecutionContext): F[PetstoreClient[F]] =
+  def apply[F[_]: ConcurrentEffect](baseUrl: Uri)(implicit executionContext: ExecutionContext): F[PetstoreClient[F]] =
     Http1Client[F](config = BlazeClientConfig.defaultConfig.copy(executionContext = executionContext))
-      .map(PetstoreHttpClient(_, baseUrl))
+      .map(PetstoreHttpClient.build(_, baseUrl))
 }
