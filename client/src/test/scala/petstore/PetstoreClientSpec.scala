@@ -25,7 +25,9 @@ class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with Eith
   }
 
   it should "not get the pets by id when the pet does not exist" in {
-    withClient(List(Pet(1, "a"), Pet(2, "b"))) { _.getPet(3).map(_.left.value should ===(Error(404, ""))) }
+    withClient(List(Pet(1, "a"), Pet(2, "b"))) {
+      _.getPet(3).map(_.left.value should ===(Error(404, "Not found pet with id: 3")))
+    }
   }
 
   it should "able to create new pets" in {

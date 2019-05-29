@@ -35,7 +35,7 @@ class PetstoreEndpoint[F[_]: Sync](petstoreService: PetstoreService[F])(implicit
         petstoreService.getPets(limit).flatMap(Ok(_))
 
       case GET -> Root / "pets" / LongVar(id) =>
-        petstoreService.getPet(id).flatMap(_.fold(NotFound())(Ok(_)))
+        petstoreService.getPet(id).flatMap(_.fold(NotFound(s"Not found pet with id: $id"))(Ok(_)))
     }
 }
 

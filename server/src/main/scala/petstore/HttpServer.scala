@@ -24,7 +24,6 @@ class HttpServer[F[_]: Effect](petstoreService: F[PetstoreService[F]])(implicit 
         } yield exitCode
       }
   }
-
 }
 
 import ExecutionContext.Implicits.global

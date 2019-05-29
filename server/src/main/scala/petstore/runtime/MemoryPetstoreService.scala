@@ -7,7 +7,6 @@ import cats.effect.ConcurrentEffect
 import cats.implicits._
 
 object MemoryPetstoreService {
-
   private def build[F[_]: ConcurrentEffect](ref: Ref[F, List[Pet]]): PetstoreService[F] = new PetstoreService[F] {
     def createPet(newPet: NewPet): F[Unit] =
       ref
