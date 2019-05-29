@@ -4,6 +4,8 @@ import cats.effect._
 import cats.syntax.functor._
 import cats.syntax.either._
 import cats.syntax.flatMap._
+import cats.syntax.show._
+import cats.implicits.catsStdShowForLong
 import petstore.PetstoreClient
 import petstore.models.{Error => PetError, _}
 import org.http4s._
@@ -26,25 +28,24 @@ object PetstoreHttpClient {
       implicit val newPetEntity: EntityEncoder[F, NewPet]  = jsonEncoderOf[F, NewPet]
       implicit val petEntity: EntityDecoder[F, Pet]        = jsonOf[F, Pet]
       implicit val petsEntity: EntityDecoder[F, List[Pet]] = jsonOf[F, List[Pet]]
-      private val petsUrl                                  = baseUrl / "pets"
 
       def createPet(newPet: NewPet): F[Unit] =
         for {
           _ <- client.expect[Unit](
-            Request[F](uri = petsUrl, method = Method.POST).withBody(newPet)
+            Request[F](uri = baseUrl / "pets", method = Method.POST).withBody(newPet)
           )
           _ <- L.info(s"Pet $newPet has been created!")
         } yield ()
 
       def getPets(limit: Option[Int]): F[List[Pet]] =
         for {
-          pets <- client.expect[List[Pet]](limit.fold(petsUrl)(petsUrl +? ("limit", _)))
+          pets <- client.expect[List[Pet]](limit.fold(baseUrl / "pets")(baseUrl / "pets" +? ("limit", _)))
           _    <- L.info(s"Pets with limit($limit): [${pets.mkString(", ")}]")
         } yield pets
 
       def getPet(id: Long): F[Either[PetError, Pet]] =
         for {
-          result <- client.fetch(Request[F](method = Method.GET, uri = petsUrl / id.toString)) { handleResponse }
+          result <- client.fetch(Request[F](method = Method.GET, uri = baseUrl / "pets" / id.show)) { handleResponse }
           _      <- L.debug(s"Pet by id($id): $result")
         } yield result
 
