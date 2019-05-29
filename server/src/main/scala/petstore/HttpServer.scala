@@ -7,7 +7,8 @@ import org.http4s.server.blaze.BlazeBuilder
 import cats.syntax.flatMap._
 import scala.concurrent.ExecutionContext
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
-class HttpServer[F[_]: Effect](petstoreService: F[PetstoreService[F]])(implicit executionContext: ExecutionContext)
+class HttpServer[F[_]: ConcurrentEffect](petstoreService: F[PetstoreService[F]])(
+    implicit executionContext: ExecutionContext)
     extends StreamApp[F] {
   def stream(args: List[String], requestShutdown: F[Unit]): Stream[F, ExitCode] = {
     Stream
