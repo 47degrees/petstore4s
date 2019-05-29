@@ -9,12 +9,9 @@ import cats.effect._
 import cats.syntax.flatMap._
 import cats.syntax.functor._
 
-import io.chrisdavenport.log4cats.Logger
-
 import models._
 
-class PetstoreEndpoint[F[_]: ConcurrentEffect](petstoreService: PetstoreService[F])(implicit L: Logger[F])
-    extends Http4sDsl[F] {
+class PetstoreEndpoint[F[_]: ConcurrentEffect](petstoreService: PetstoreService[F]) extends Http4sDsl[F] {
   implicit val petEncoder: Encoder[Pet]                = deriveEncoder[Pet]
   implicit val newPetEncoder: Decoder[NewPet]          = deriveDecoder[NewPet]
   implicit val newPetEntity: EntityDecoder[F, NewPet]  = jsonOf[F, NewPet]
@@ -28,7 +25,6 @@ class PetstoreEndpoint[F[_]: ConcurrentEffect](petstoreService: PetstoreService[
         req.decode[NewPet] { newPet =>
           for {
             _      <- petstoreService.createPet(newPet)
-            _      <- L.debug(s"$newPet has been created!")
             result <- Created()
           } yield result
         }
@@ -41,6 +37,6 @@ class PetstoreEndpoint[F[_]: ConcurrentEffect](petstoreService: PetstoreService[
 }
 
 object PetstoreEndpoint {
-  def apply[F[_]: ConcurrentEffect: Logger](petstoreService: PetstoreService[F]): HttpService[F] =
+  def apply[F[_]: ConcurrentEffect](petstoreService: PetstoreService[F]): HttpService[F] =
     new PetstoreEndpoint[F](petstoreService).service
 }

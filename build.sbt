@@ -7,7 +7,6 @@ val V = new {
   val cats           = "1.6.0"
   val catsEffect     = "0.10.1"
   val fs2            = "0.10.6"
-  val log4cats       = "0.2.0"
   val scodecBits     = "1.1.9"
   val log4s          = "1.7.0"
 }
@@ -96,7 +95,5 @@ lazy val testDependencies = Seq(
 )
 
 lazy val logDependencies = Seq(
-  "ch.qos.logback"    % "logback-classic" % V.logbackClassic,
-  "io.chrisdavenport" %% "log4cats-core"  % V.log4cats,
-  "io.chrisdavenport" %% "log4cats-slf4j" % V.log4cats
+  "ch.qos.logback" % "logback-classic" % V.logbackClassic
 )
