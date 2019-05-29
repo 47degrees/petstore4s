@@ -10,7 +10,7 @@ object MemoryPetstoreService {
   private def build[F[_]: ConcurrentEffect](ref: Ref[F, List[Pet]]): PetstoreService[F] = new PetstoreService[F] {
     def createPet(newPet: NewPet): F[Unit] =
       ref
-        .modify(list => Pet(list.map(_.id).foldLeft(0L)(Math.max) + 1, newPet.name) :: list)
+        .modify(list => Pet(list.map(_.id).foldLeft(0L)(Math.max) + 1, newPet.name, newPet.tag) :: list)
         .void
 
     def getPets(limit: Option[Int]): F[List[Pet]] = ref.get.map(x => limit.fold(x)(x.take))

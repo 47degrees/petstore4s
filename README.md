@@ -13,13 +13,12 @@ Run the client
 ```sh 
 > sbt "~client/test:runMain amm"
 
-@ import petstore._, models._, runtime._, cats.implicits._, org.http4s.Uri, cats.effect.IO, scala.concurrent.ExecutionContext.Implicits.global, io.chrisdavenport.log4cats.slf4j.Slf4jLogger
-@ def program(name: String): IO[List[Pet]] = Slf4jLogger.fromName[IO]("PetstoreClient").flatMap { implicit log =>
+@ import petstore._, models._, runtime._, cats.implicits._, org.http4s.Uri, cats.effect.IO, scala.concurrent.ExecutionContext.Implicits.global
+@ def program(name: String): IO[List[Pet]] =
         for {
             client <- PetstoreHttpClient[IO](Uri.unsafeFromString("http://localhost:8080"))
-            _      <- client.createPet(NewPet(name))
+            _      <- client.createPet(NewPet(name, none))
             pets   <- client.getPets(none)
         } yield pets
-      }
 @ program("foo").unsafeRunSync
 ```
