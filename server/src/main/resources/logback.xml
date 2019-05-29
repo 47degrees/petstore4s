@@ -14,8 +14,9 @@
     </appender>
 
     <logger name="org.http4s" level="INFO"/>
+    
 
-    <root level="OFF">
+    <root level="DEBUG">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

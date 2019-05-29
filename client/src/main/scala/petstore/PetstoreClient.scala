@@ -3,7 +3,7 @@ package petstore
 import models._
 
 trait PetstoreClient[F[_]] {
-  def createPet(pet: NewPet): F[Unit]
+  def createPet(newPet: NewPet): F[Unit]
 
   def getPets(limit: Option[Int]): F[List[Pet]]
 

@@ -7,10 +7,13 @@ import io.circe.generic.semiauto._
 import org.http4s.dsl.Http4sDsl
 import cats.effect._
 import cats.syntax.flatMap._
+import cats.syntax.functor._
+
+import io.chrisdavenport.log4cats.Logger
 
 import models._
 
-class PetstoreEndpoint[F[_]: Sync](petstoreService: PetstoreService[F]) extends Http4sDsl[F] {
+class PetstoreEndpoint[F[_]: Sync](petstoreService: PetstoreService[F])(implicit L: Logger[F]) extends Http4sDsl[F] {
   implicit val petEncoder: Encoder[Pet]                = deriveEncoder[Pet]
   implicit val newPetEncoder: Decoder[NewPet]          = deriveDecoder[NewPet]
   implicit val newPetEntity: EntityDecoder[F, NewPet]  = jsonOf[F, NewPet]
@@ -22,7 +25,11 @@ class PetstoreEndpoint[F[_]: Sync](petstoreService: PetstoreService[F]) extends 
     HttpService {
       case req @ POST -> Root / "pets" =>
         req.decode[NewPet] { newPet =>
-          petstoreService.createPet(newPet).flatMap(_ => Created())
+          for {
+            _      <- petstoreService.createPet(newPet)
+            _      <- L.debug(s"$newPet has been created!")
+            result <- Created()
+          } yield result
         }
       case GET -> Root / "pets" :? Limit(limit) =>
         petstoreService.getPets(limit).flatMap(Ok(_))
@@ -33,6 +40,6 @@ class PetstoreEndpoint[F[_]: Sync](petstoreService: PetstoreService[F]) extends 
 }
 
 object PetstoreEndpoint {
-  def apply[F[_]: Sync](petstoreService: PetstoreService[F]): HttpService[F] =
+  def apply[F[_]: Sync: Logger](petstoreService: PetstoreService[F]): HttpService[F] =
     new PetstoreEndpoint[F](petstoreService).service
 }

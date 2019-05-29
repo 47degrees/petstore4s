@@ -43,17 +43,23 @@ object PetstoreClientSpec {
   import org.http4s.Uri
   import org.http4s.client.Client
   import cats.effect.IO
+  import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 
   import runtime._
 
   def withClient(pets: List[Pet] = List.empty)(test: PetstoreClient[IO] => IO[Assertion]): Assertion =
-    (for {
-      service <- MemoryPetstoreService[IO](pets)
-      result <- test(
-        PetstoreHttpClient.build(
-          Client.fromHttpService(PetstoreEndpoint(service)),
-          Uri.unsafeFromString("")
-        ))
-    } yield result).unsafeRunSync()
+    (Slf4jLogger
+      .fromName[IO]("PetstoreClient")
+      .flatMap { implicit log =>
+        for {
+          service <- MemoryPetstoreService[IO](pets)
+          result <- test(
+            PetstoreHttpClient.build(
+              Client.fromHttpService(PetstoreEndpoint(service)),
+              Uri.unsafeFromString("")
+            ))
+        } yield result
+      })
+      .unsafeRunSync()
 
 }
