@@ -11,12 +11,18 @@ class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with Eith
 
   "Petstore client" should "get the pets" in {
     val expectedPets = List(pet(1, "a"), pet(2, "b"), pet(3, "c", "tag1".some))
-    withClient(expectedPets) { _.getPets(none).map(_ should ===(expectedPets)) }
+    withClient(expectedPets) { _.getPets(none, none).map(_ should ===(expectedPets)) }
   }
 
   it should "get the pets when the limit is established" in {
     val expectedPets = List(pet(1, "a"), pet(2, "b"))
-    withClient(expectedPets) { _.getPets(1.some).map(_ should ===(expectedPets.take(1))) }
+    withClient(expectedPets) { _.getPets(1.some, none).map(_ should ===(expectedPets.take(1))) }
+  }
+
+  it should "get the pets when the name is established" in {
+    val expectedPets = List(pet(1, "abb"), pet(3, "ma"))
+    val pets         = List(pet(2, "bx"), pet(4, "oo")) ++ expectedPets
+    withClient(pets) { _.getPets(none, "a".some).map(_ should ===(expectedPets)) }
   }
 
   it should "get the pets by id" in {
@@ -35,8 +41,26 @@ class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with Eith
       val petToCreate = newPet("name", "tag".some)
       for {
         _    <- client.createPet(petToCreate)
-        pets <- client.getPets(none)
+        pets <- client.getPets(none, none)
       } yield pets should ===(List(pet(1, petToCreate.name, petToCreate.tag)))
+    }
+  }
+
+  it should "able to update pets" in {
+    withClient(List(pet(1, "name", "tag".some))) { client =>
+      for {
+        _         <- client.updatePet(1, UpdatePet("tag1"))
+        actualPet <- client.getPet(1)
+      } yield actualPet.right.value should ===(pet(1, "name", "tag1".some))
+    }
+  }
+
+  it should "able to delete pets" in {
+    withClient(List(pet(1, "name"))) { client =>
+      for {
+        _         <- client.deletePet(1)
+        actualPet <- client.getPet(1)
+      } yield actualPet.left.value should ===(Error(404, "Not found pet with id: 1"))
     }
   }
 
