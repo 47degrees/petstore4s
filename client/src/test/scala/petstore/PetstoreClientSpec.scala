@@ -5,6 +5,7 @@ import Matchers._
 import org.scalactic.TypeCheckedTripleEquals
 import cats.implicits._
 import models._
+import scala.concurrent.ExecutionContext
 
 class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with EitherValues with OptionValues {
   import PetstoreClientSpec._
@@ -79,9 +80,13 @@ class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with Eith
 object PetstoreClientSpec {
   import org.http4s.Uri
   import org.http4s.client.Client
+  import org.http4s.server.Router
   import cats.effect.IO
+  import org.http4s.implicits._
 
   import runtime._
+
+  private implicit val cs = IO.contextShift(ExecutionContext.global)
 
   def pet(id: Long, name: String, tag: Option[String] = none): Pet = Pet(id, name, tag)
   def newPet(name: String, tag: Option[String] = none): NewPet     = NewPet(name, tag)
@@ -91,7 +96,7 @@ object PetstoreClientSpec {
       service <- MemoryPetstoreService[IO](pets)
       result <- test(
         PetstoreHttpClient.build(
-          Client.fromHttpService(PetstoreEndpoint(service)),
+          Client.fromHttpApp(Router(("/", PetstoreEndpoint(service))).orNotFound),
           Uri.unsafeFromString("")
         ))
     } yield result).unsafeRunSync()

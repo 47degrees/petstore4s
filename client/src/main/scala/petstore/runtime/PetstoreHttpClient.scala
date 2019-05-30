@@ -35,12 +35,12 @@ object PetstoreHttpClient {
 
       def createPet(newPet: NewPet): F[Either[CreatePetError, Unit]] =
         client.fetch(
-          Request[F](method = Method.POST, uri = baseUrl / "pets").withBody(newPet)
-        ) { 
-            case Successful(response) => response.as[Unit].map(_.asRight)
-            case response if response.status == Status.BadRequest =>
-              response.as[String].map(x => Coproduct[CreatePetError](DuplicatedPetError(x)).asLeft)
-            case default => default.as[PetError].map(x => Coproduct[CreatePetError](x).asLeft)
+          Request[F](method = Method.POST, uri = baseUrl / "pets").withEntity(newPet)
+        ) {
+          case Successful(response) => response.as[Unit].map(_.asRight)
+          case response if response.status == Status.BadRequest =>
+            response.as[String].map(x => Coproduct[CreatePetError](DuplicatedPetError(x)).asLeft)
+          case default => default.as[PetError].map(x => Coproduct[CreatePetError](x).asLeft)
         }
 
       def getPets(limit: Option[Int], name: Option[String]): F[List[Pet]] =
@@ -56,7 +56,7 @@ object PetstoreHttpClient {
 
       def updatePet(id: Long, updatePet: UpdatePet): F[Unit] =
         client.expect[Unit](
-          Request[F](method = Method.PUT, uri = baseUrl / "pets" / id.show).withBody(updatePet)
+          Request[F](method = Method.PUT, uri = baseUrl / "pets" / id.show).withEntity(updatePet)
         )
 
       def deletePet(id: Long): F[Unit] =
@@ -65,7 +65,7 @@ object PetstoreHttpClient {
         )
     }
 
-  def apply[F[_]: ConcurrentEffect](baseUrl: Uri)(implicit executionContext: ExecutionContext): F[PetstoreClient[F]] =
-    Http1Client[F](config = BlazeClientConfig.defaultConfig.copy(executionContext = executionContext))
-      .map(PetstoreHttpClient.build(_, baseUrl))
+  def apply[F[_]: ConcurrentEffect](baseUrl: Uri)(
+      implicit executionContext: ExecutionContext): Resource[F, PetstoreClient[F]] =
+    BlazeClientBuilder(executionContext).resource.map(PetstoreHttpClient.build(_, baseUrl))
 }

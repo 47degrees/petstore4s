@@ -20,12 +20,14 @@ Run the client
 ```sh 
 > sbt "~client/test:runMain amm"
 
-@ import petstore._, models._, runtime._, cats.implicits._, org.http4s.Uri, cats.effect.IO, scala.concurrent.ExecutionContext.Implicits.global
+@ import petstore._, models._, runtime._, cats.implicits._, org.http4s.Uri, cats.effect._, scala.concurrent.ExecutionContext.Implicits.global
+@ implicit val cs: ContextShift[IO] = IO.contextShift(global)
 @ def program(name: String): IO[List[Pet]] =
+    PetstoreHttpClient[IO](Uri.unsafeFromString("http://localhost:8080")).use { client =>
         for {
-            client <- PetstoreHttpClient[IO](Uri.unsafeFromString("http://localhost:8080"))
             _      <- client.createPet(NewPet(name, none))
-            pets   <- client.getPets(none)
+            pets   <- client.getPets(none, none)
         } yield pets
+    }
 @ program("foo").unsafeRunSync
 ```

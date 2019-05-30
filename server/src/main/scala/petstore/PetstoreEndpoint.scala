@@ -36,8 +36,8 @@ class PetstoreEndpoint[F[_]: ConcurrentEffect](petstoreService: PetstoreService[
     implicit val peh2 = at[PetError](e => InternalServerError(e))
   }
 
-  def service: HttpService[F] =
-    HttpService {
+  def service: HttpRoutes[F] =
+    HttpRoutes.of {
       case req @ POST -> Root / "pets" =>
         req.decode[NewPet] { newPet =>
           petstoreService
@@ -65,6 +65,6 @@ class PetstoreEndpoint[F[_]: ConcurrentEffect](petstoreService: PetstoreService[
 }
 
 object PetstoreEndpoint {
-  def apply[F[_]: ConcurrentEffect](petstoreService: PetstoreService[F]): HttpService[F] =
+  def apply[F[_]: ConcurrentEffect](petstoreService: PetstoreService[F]): HttpRoutes[F] =
     new PetstoreEndpoint[F](petstoreService).service
 }

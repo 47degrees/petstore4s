@@ -1,14 +1,12 @@
 name := "petstore"
 val V = new {
-  val circe          = "0.9.3"
-  val http4s         = "0.18.23"
+  val circe          = "0.11.1"
+  val http4s         = "0.20.1"
   val scalatest      = "3.0.5"
-  val logbackClassic = "1.2.1"
+  val logbackClassic = "1.2.3"
   val cats           = "1.6.0"
-  val catsEffect     = "0.10.1"
-  val fs2            = "0.10.6"
-  val scodecBits     = "1.1.9"
-  val log4s          = "1.7.0"
+  val catsEffect     = "1.3.0"
+  val fs2            = "1.0.4"
 }
 
 lazy val commonSettings = Seq(
@@ -78,9 +76,7 @@ lazy val server = project
 lazy val overrideDependecies = Seq(
   "org.typelevel" %% "cats-core"   % V.cats,
   "org.typelevel" %% "cats-effect" % V.catsEffect,
-  "co.fs2"        %% "fs2-core"    % V.fs2,
-  "org.scodec"    %% "scodec-bits" % V.scodecBits,
-  "org.log4s"     %% "log4s"       % V.log4s
+  "co.fs2"        %% "fs2-core"    % V.fs2
 )
 lazy val commonDependencies = Seq(
   "org.http4s" %% "http4s-dsl"    % V.http4s,
