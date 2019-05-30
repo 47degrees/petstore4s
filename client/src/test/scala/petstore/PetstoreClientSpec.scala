@@ -6,7 +6,7 @@ import org.scalactic.TypeCheckedTripleEquals
 import cats.implicits._
 import models._
 
-class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with EitherValues {
+class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with EitherValues with OptionValues {
   import PetstoreClientSpec._
 
   "Petstore client" should "get the pets" in {
@@ -32,7 +32,7 @@ class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with Eith
 
   it should "not get the pets by id when the pet does not exist" in {
     withClient(List(pet(1, "a"), pet(2, "b"))) {
-      _.getPet(3).map(_.left.value should ===(Error(404, "Not found pet with id: 3")))
+      _.getPet(3).map(_.left.value.select[NotFoundError].value should ===(NotFoundError("Not found pet with id: 3")))
     }
   }
 
@@ -43,6 +43,16 @@ class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with Eith
         _    <- client.createPet(petToCreate)
         pets <- client.getPets(none, none)
       } yield pets should ===(List(pet(1, petToCreate.name, petToCreate.tag)))
+    }
+  }
+
+  it should "not able to create two pets with the same name" in {
+    withClient(List(pet(1, "a", "tag".some))) { client =>
+      for {
+        result <- client.createPet(newPet("a", "tag".some))
+      } yield
+        result.left.value.select[DuplicatedPetError].value should ===(
+          DuplicatedPetError("Pet with name `a` already exists"))
     }
   }
 
@@ -60,7 +70,7 @@ class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with Eith
       for {
         _         <- client.deletePet(1)
         actualPet <- client.getPet(1)
-      } yield actualPet.left.value should ===(Error(404, "Not found pet with id: 1"))
+      } yield actualPet.left.value.select[NotFoundError].value should ===(NotFoundError("Not found pet with id: 1"))
     }
   }
 

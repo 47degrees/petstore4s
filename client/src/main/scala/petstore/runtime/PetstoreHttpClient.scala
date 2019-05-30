@@ -14,6 +14,7 @@ import org.http4s.circe._
 import org.http4s.Status.Successful
 import io.circe._
 import io.circe.generic.semiauto._
+import shapeless.Coproduct
 
 import scala.concurrent.ExecutionContext
 
@@ -21,24 +22,37 @@ object PetstoreHttpClient {
   implicit val newPetDecoder: Encoder[NewPet]       = deriveEncoder[NewPet]
   implicit val updatePetDecoder: Encoder[UpdatePet] = deriveEncoder[UpdatePet]
   implicit val petDecoder: Decoder[Pet]             = deriveDecoder[Pet]
+  implicit val petErrorDecoder: Decoder[PetError]   = deriveDecoder[PetError]
 
   def build[F[_]: Effect](client: Client[F], baseUrl: Uri): PetstoreClient[F] =
     new PetstoreClient[F] {
+      import PetstoreClient._
       implicit val newPetEntity: EntityEncoder[F, NewPet]       = jsonEncoderOf[F, NewPet]
       implicit val updatePetEntity: EntityEncoder[F, UpdatePet] = jsonEncoderOf[F, UpdatePet]
       implicit val petEntity: EntityDecoder[F, Pet]             = jsonOf[F, Pet]
+      implicit val petErrorEntity: EntityDecoder[F, PetError]   = jsonOf[F, PetError]
       implicit val petsEntity: EntityDecoder[F, List[Pet]]      = jsonOf[F, List[Pet]]
 
-      def createPet(newPet: NewPet): F[Unit] =
-        client.expect[Unit](
+      def createPet(newPet: NewPet): F[Either[CreatePetError, Unit]] =
+        client.fetch(
           Request[F](method = Method.POST, uri = baseUrl / "pets").withBody(newPet)
-        )
+        ) { 
+            case Successful(response) => response.as[Unit].map(_.asRight)
+            case response if response.status == Status.BadRequest =>
+              response.as[String].map(x => Coproduct[CreatePetError](DuplicatedPetError(x)).asLeft)
+            case default => default.as[PetError].map(x => Coproduct[CreatePetError](x).asLeft)
+        }
 
       def getPets(limit: Option[Int], name: Option[String]): F[List[Pet]] =
         client.expect[List[Pet]](baseUrl / "pets" +?? ("limit", limit) +?? ("name", name))
 
-      def getPet(id: Long): F[Either[PetError, Pet]] =
-        client.fetch(Request[F](method = Method.GET, uri = baseUrl / "pets" / id.show)) { handleResponse }
+      def getPet(id: Long): F[Either[GetPetError, Pet]] =
+        client.fetch(Request[F](method = Method.GET, uri = baseUrl / "pets" / id.show)) {
+          case Successful(response) => response.as[Pet].map(_.asRight)
+          case response if response.status == Status.NotFound =>
+            response.as[String].map(x => Coproduct[GetPetError](NotFoundError(x)).asLeft)
+          case default => default.as[PetError].map(x => Coproduct[GetPetError](x).asLeft)
+        }
 
       def updatePet(id: Long, updatePet: UpdatePet): F[Unit] =
         client.expect[Unit](
@@ -49,11 +63,6 @@ object PetstoreHttpClient {
         client.expect[Unit](
           Request[F](method = Method.DELETE, uri = baseUrl / "pets" / id.show)
         )
-
-      private def handleResponse: Response[F] => F[Either[PetError, Pet]] = {
-        case Successful(response) => response.as[Pet].map(_.asRight)
-        case default              => default.as[String].map(PetError(default.status.code, _).asLeft)
-      }
     }
 
   def apply[F[_]: ConcurrentEffect](baseUrl: Uri)(implicit executionContext: ExecutionContext): F[PetstoreClient[F]] =

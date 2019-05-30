@@ -9,4 +9,8 @@ object models {
 
   final case class Error(code: Int, message: String)
 
+  final case class NotFoundError(message: String)
+
+  final case class DuplicatedPetError(message: String)
+
 }
