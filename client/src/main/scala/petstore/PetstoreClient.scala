@@ -19,6 +19,8 @@ trait PetstoreClient[F[_]] {
 }
 
 object PetstoreClient {
-  type GetPetError    = NotFoundError :+: Error :+: CNil
-  type CreatePetError = DuplicatedPetError :+: Error :+: CNil
+  final case class UnexpectedError(statusCode: Int, error: Error)
+  type GetPetError    = NotFoundError :+: UnexpectedError :+: CNil
+  type CreatePetError = DuplicatedPetError :+: UnexpectedError :+: CNil
+
 }
