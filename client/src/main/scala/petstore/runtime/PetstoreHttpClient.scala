@@ -36,11 +36,12 @@ object PetstoreHttpClient {
       def createPet(newPet: NewPet): F[Either[CreatePetError, Unit]] =
         client.fetch(
           Request[F](method = Method.POST, uri = baseUrl / "pets").withBody(newPet)
-        ) { 
-            case Successful(response) => response.as[Unit].map(_.asRight)
-            case response if response.status == Status.BadRequest =>
-              response.as[String].map(x => Coproduct[CreatePetError](DuplicatedPetError(x)).asLeft)
-            case default => default.as[PetError].map(x => Coproduct[CreatePetError](x).asLeft)
+        ) {
+          case Successful(response) => response.as[Unit].map(_.asRight)
+          case response if response.status == Status.BadRequest =>
+            response.as[String].map(x => Coproduct[CreatePetError](DuplicatedPetError(x)).asLeft)
+          case default =>
+            default.as[PetError].map(x => Coproduct[CreatePetError](UnexpectedError(default.status.code, x)).asLeft)
         }
 
       def getPets(limit: Option[Int], name: Option[String]): F[List[Pet]] =
@@ -51,7 +52,8 @@ object PetstoreHttpClient {
           case Successful(response) => response.as[Pet].map(_.asRight)
           case response if response.status == Status.NotFound =>
             response.as[String].map(x => Coproduct[GetPetError](NotFoundError(x)).asLeft)
-          case default => default.as[PetError].map(x => Coproduct[GetPetError](x).asLeft)
+          case default =>
+            default.as[PetError].map(x => Coproduct[GetPetError](UnexpectedError(default.status.code, x)).asLeft)
         }
 
       def updatePet(id: Long, updatePet: UpdatePet): F[Unit] =
