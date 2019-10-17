@@ -41,6 +41,11 @@ lazy val client = project
   .settings(commonSettings)
   .dependsOn(share, server % "test->test")
   .settings(
+    idlType := "openapi",
+    srcGenSourceDirs := Seq((Compile / resourceDirectory).value),
+    srcGenTargetDir := (Compile / sourceManaged).value / "compiled_openapi",
+    sourceGenerators in Compile += (Compile / srcGen).taskValue,
+    idlGenOpenApiHttpImpl := higherkindness.mu.rpc.idlgen.openapi.OpenApiSrcGenerator.HttpImpl.Http4sV20,
     libraryDependencies ++= Seq(
       "org.http4s" %% "http4s-blaze-client" % V.http4s,
       ("com.lihaoyi" % "ammonite" % "1.5.0" % "test").cross(CrossVersion.full)
