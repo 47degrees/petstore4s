@@ -1,10 +1,10 @@
 package petstore
 
 import models._
-
 import cats.effect.concurrent.Ref
 import cats.effect.ConcurrentEffect
 import cats.implicits._
+import petstore.AnotherPetstoreClient._
 import shapeless.Coproduct
 
 object MemoryPetstoreService {
@@ -17,7 +17,8 @@ object MemoryPetstoreService {
             if (list.exists(_.name === newPet.name))
               (
                 list,
-                Coproduct[CreatePetError](DuplicatedPetError(s"Pet with name `${newPet.name}` already exists"))
+                Coproduct[CreatePetError](
+                  CreatePetDuplicatedResponseError(s"Pet with name `${newPet.name}` already exists"))
                   .asLeft[Unit])
             else
               (
@@ -34,7 +35,7 @@ object MemoryPetstoreService {
     def getPet(id: Long): F[Either[GetPetError, Pet]] =
       ref.get
         .map(_.find(_.id === id))
-        .map(_.fold(Coproduct[GetPetError](NotFoundError(s"Not found pet with id: $id")).asLeft[Pet])(
+        .map(_.fold(Coproduct[GetPetError](GetPetNotFoundResponseError(s"Not found pet with id: $id")).asLeft[Pet])(
           _.asRight[GetPetError]))
 
     def updatePet(id: Long, updatePet: UpdatePet): F[Unit] =

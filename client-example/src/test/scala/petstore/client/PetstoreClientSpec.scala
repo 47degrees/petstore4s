@@ -1,10 +1,14 @@
 package petstore
+package client
 
-import org.scalatest._
-import Matchers._
-import org.scalactic.TypeCheckedTripleEquals
 import cats.implicits._
-import models._
+import org.scalactic.TypeCheckedTripleEquals
+import org.scalatest.Matchers._
+import org.scalatest._
+import petstore.AnotherPetstoreClient.{CreatePetDuplicatedResponseError, GetPetNotFoundResponseError}
+import petstore.models.{NewPet, Pet, UpdatePet}
+import petstore.{AnotherPetstoreClient, AnotherPetstoreHttpClient, MemoryPetstoreService, PetstoreEndpoint}
+
 import scala.concurrent.ExecutionContext
 
 class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with EitherValues with OptionValues {
@@ -33,7 +37,9 @@ class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with Eith
 
   it should "not get the pets by id when the pet does not exist" in {
     withClient(List(pet(1, "a"), pet(2, "b"))) {
-      _.getPet(3).map(_.left.value.select[NotFoundError].value should ===(NotFoundError("Not found pet with id: 3")))
+      _.getPet(3).map(
+        _.left.value.select[GetPetNotFoundResponseError].value should ===(
+          GetPetNotFoundResponseError("Not found pet with id: 3")))
     }
   }
 
@@ -52,8 +58,8 @@ class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with Eith
       for {
         result <- client.createPet(newPet("a", "tag".some))
       } yield
-        result.left.value.select[DuplicatedPetError].value should ===(
-          DuplicatedPetError("Pet with name `a` already exists"))
+        result.left.value.select[CreatePetDuplicatedResponseError].value should ===(
+          CreatePetDuplicatedResponseError("Pet with name `a` already exists"))
     }
   }
 
@@ -71,31 +77,31 @@ class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with Eith
       for {
         _         <- client.deletePet(1)
         actualPet <- client.getPet(1)
-      } yield actualPet.left.value.select[NotFoundError].value should ===(NotFoundError("Not found pet with id: 1"))
+      } yield
+        actualPet.left.value.select[GetPetNotFoundResponseError].value should ===(
+          GetPetNotFoundResponseError("Not found pet with id: 1"))
     }
   }
 
 }
 
 object PetstoreClientSpec {
+  import cats.effect.IO
   import org.http4s.Uri
   import org.http4s.client.Client
-  import org.http4s.server.Router
-  import cats.effect.IO
   import org.http4s.implicits._
-
-  import runtime._
+  import org.http4s.server.Router
 
   private implicit val cs = IO.contextShift(ExecutionContext.global)
 
   def pet(id: Long, name: String, tag: Option[String] = none): Pet = Pet(id, name, tag)
   def newPet(name: String, tag: Option[String] = none): NewPet     = NewPet(name, tag)
 
-  def withClient(pets: List[Pet] = List.empty)(test: PetstoreClient[IO] => IO[Assertion]): Assertion =
+  def withClient(pets: List[Pet] = List.empty)(test: AnotherPetstoreClient[IO] => IO[Assertion]): Assertion =
     (for {
       service <- MemoryPetstoreService[IO](pets)
       result <- test(
-        PetstoreHttpClient.build(
+        AnotherPetstoreHttpClient.build(
           Client.fromHttpApp(Router(("/", PetstoreEndpoint(service))).orNotFound),
           Uri.unsafeFromString("")
         ))

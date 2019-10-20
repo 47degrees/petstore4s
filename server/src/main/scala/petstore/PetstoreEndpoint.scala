@@ -8,8 +8,8 @@ import org.http4s.dsl.Http4sDsl
 import cats.effect._
 import cats.syntax.flatMap._
 import cats.syntax.functor._
-
-import models.{Error => PetError, _}
+import petstore.AnotherPetstoreClient._
+import petstore.models._
 
 class PetstoreEndpoint[F[_]: ConcurrentEffect](petstoreService: PetstoreService[F]) extends Http4sDsl[F] {
   implicit val petEncoder: Encoder[Pet]                     = deriveEncoder[Pet]
@@ -27,12 +27,12 @@ class PetstoreEndpoint[F[_]: ConcurrentEffect](petstoreService: PetstoreService[
   import shapeless.Poly1
 
   object GetPetResponseHandler extends Poly1 {
-    implicit val peh1 = at[NotFoundError](e => NotFound(e.message))
+    implicit val peh1 = at[GetPetNotFoundResponseError](e => NotFound(e.value))
     implicit val peh2 = at[PetError](e => InternalServerError(e))
   }
 
   object CreatePetResponseHandler extends Poly1 {
-    implicit val peh1 = at[DuplicatedPetError](e => BadRequest(e.message))
+    implicit val peh1 = at[CreatePetDuplicatedResponseError](e => BadRequest(e.value))
     implicit val peh2 = at[PetError](e => InternalServerError(e))
   }
 
