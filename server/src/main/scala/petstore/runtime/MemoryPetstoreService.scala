@@ -43,7 +43,7 @@ object MemoryPetstoreService {
         .update(
           list =>
             list.find(_.id === id).map(_.copy(tag = updatePet.tag.some)).fold(list) {
-              _ :: list.filter(_.id === id)
+              _ :: list.filter(_.id =!= id)
           }
         )
 
