@@ -6,7 +6,7 @@ import io.chrisdavenport.log4cats.SelfAwareStructuredLogger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import org.http4s._
 import org.http4s.client.blaze.BlazeClientBuilder
-import petstore.models.NewPet
+import petstore.models.{NewPet, UpdatePet}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -22,16 +22,24 @@ object Boot extends IOApp {
       )
 
       (for {
-        _         <- petStoreClient.createPet(NewPet("Beethoven", None))
-        beethoven <- petStoreClient.getPet(petId = 1)
-        _         <- L.info(s"Pet = $beethoven")
+        _              <- petStoreClient.createPet(NewPet("Beethoven", None))
+        beethoven      <- petStoreClient.getPet(petId = 1)
+        _              <- L.info(s"Pet = $beethoven")
+        _              <- petStoreClient.createPet(NewPet("Meadow", Some("female-dog")))
+        myPets         <- petStoreClient.getPets(limit = None, name = None)
+        _              <- L.info(s"My pets = $myPets")
+        nonExistingPet <- petStoreClient.getPet(petId = -1)
+        _              <- L.info(s"No existing pet = $nonExistingPet")
+        _              <- petStoreClient.updatePet(petId = 1, updatePet = UpdatePet("updated"))
+        myNewPetList   <- petStoreClient.getPets(limit = None, name = None)
+        _              <- L.info(s"My new pet list = $myNewPetList")
+        newBeethoven   <- petStoreClient.getPet(petId = 1)
+        _              <- L.info(s"Updated Pet = $newBeethoven")
+        _              <- L.info(s"Deleting pet with id 1 from the catalogue...")
+        _              <- petStoreClient.deletePet(petId = 1)
+        myPets         <- petStoreClient.getPets(limit = None, name = None)
+        _              <- L.info(s"My pet list updated = $myPets")
       } yield ExitCode.Success)
-
-//      def getPets(limit: Option[Int], name: Option[String]): F[Pets]
-//      def createPet(newPet: NewPet): F[Either[CreatePetErrorResponse, Unit]]
-//      def getPet(petId: Int): F[Either[GetPetErrorResponse, Pet]]
-//      def deletePet(petId: Int): F[Unit]
-//      def updatePet(petId: Int, updatePet: UpdatePet): F[Unit]
 
     }
 
