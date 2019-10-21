@@ -1,7 +1,7 @@
 package petstore
 
 import models._
-
+import petstore.AnotherPetstoreClient._
 import shapeless.{:+:, CNil}
 
 trait PetstoreService[F[_]] {
@@ -18,6 +18,6 @@ trait PetstoreService[F[_]] {
 }
 
 object PetstoreService {
-  type GetPetError    = NotFoundError :+: Error :+: CNil
-  type CreatePetError = DuplicatedPetError :+: Error :+: CNil
+  type GetPetError    = GetPetNotFoundResponseError :+: PetError :+: CNil
+  type CreatePetError = CreatePetDuplicatedResponseError :+: PetError :+: CNil
 }
