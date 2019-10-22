@@ -24,8 +24,8 @@ import org.http4s.dsl.Http4sDsl
 import cats.effect._
 import cats.syntax.flatMap._
 import cats.syntax.functor._
-import petstore.AnotherPetstoreClient._
-import petstore.models._
+import models._
+import petstore.AnotherPetstoreClient.{CreatePetDuplicatedResponseError, GetPetNotFoundResponseError}
 
 class PetstoreEndpoint[F[_]: ConcurrentEffect](petstoreService: PetstoreService[F]) extends Http4sDsl[F] {
   implicit val petEncoder: Encoder[Pet]                     = deriveEncoder[Pet]
@@ -52,8 +52,8 @@ class PetstoreEndpoint[F[_]: ConcurrentEffect](petstoreService: PetstoreService[
     implicit val peh2 = at[PetError](e => InternalServerError(e))
   }
 
-  def service: HttpRoutes[F] =
-    HttpRoutes.of {
+  def service: HttpService[F] =
+    HttpService {
       case req @ POST -> Root / "pets" =>
         req.decode[NewPet] { newPet =>
           petstoreService
@@ -81,6 +81,6 @@ class PetstoreEndpoint[F[_]: ConcurrentEffect](petstoreService: PetstoreService[
 }
 
 object PetstoreEndpoint {
-  def apply[F[_]: ConcurrentEffect](petstoreService: PetstoreService[F]): HttpRoutes[F] =
+  def apply[F[_]: ConcurrentEffect](petstoreService: PetstoreService[F]): HttpService[F] =
     new PetstoreEndpoint[F](petstoreService).service
 }

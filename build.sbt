@@ -1,12 +1,12 @@
 val V = new {
-  val circe          = "0.11.1"
-  val http4s         = "0.20.1"
+  val circe          = "0.9.3"
+  val http4s         = "0.18.23"
   val scalatest      = "3.0.5"
   val logbackClassic = "1.2.3"
-  val log4cats       = "1.0.1"
+  val log4cats       = "0.1.1"
   val cats           = "1.6.0"
-  val catsEffect     = "1.3.0"
-  val fs2            = "1.0.4"
+  val catsEffect     = "0.10.1"
+  val fs2            = "0.10.6"
   val scala          = "2.12.10"
 }
 
@@ -23,7 +23,7 @@ lazy val protocol = project
     srcGenSourceDirs := Seq((Compile / resourceDirectory).value),
     srcGenTargetDir := (Compile / sourceManaged).value / "compiled_openapi",
     sourceGenerators in Compile += (Compile / srcGen).taskValue,
-    idlGenOpenApiHttpImpl := higherkindness.mu.rpc.idlgen.openapi.OpenApiSrcGenerator.HttpImpl.Http4sV20,
+    idlGenOpenApiHttpImpl := higherkindness.mu.rpc.idlgen.openapi.OpenApiSrcGenerator.HttpImpl.Http4sV18,
     libraryDependencies ++= Seq(
       "io.circe"   %% "circe-core"          % V.circe,
       "io.circe"   %% "circe-generic"       % V.circe,

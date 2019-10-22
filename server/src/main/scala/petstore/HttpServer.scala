@@ -17,25 +17,24 @@
 package petstore
 
 import cats.effect._
-import org.http4s.server.blaze.BlazeServerBuilder
+import fs2.StreamApp.ExitCode
+import fs2.{Stream, StreamApp}
+import org.http4s.server.blaze.BlazeBuilder
 import cats.syntax.flatMap._
-import cats.syntax.functor._
-import org.http4s.server.Router
-import cats.effect.IO
-import org.http4s.implicits._
-object HttpServer {
-  def apply[F[_]: ConcurrentEffect: ContextShift: Timer](petstoreService: F[PetstoreService[F]]): F[ExitCode] =
+import scala.concurrent.ExecutionContext
+class HttpServer[F[_]: ConcurrentEffect](petstoreService: F[PetstoreService[F]])(
+    implicit executionContext: ExecutionContext
+) extends StreamApp[F] {
+  def stream(args: List[String], requestShutdown: F[Unit]): Stream[F, ExitCode] = {
     for {
-      petstoreEndpoint <- petstoreService.map(PetstoreEndpoint.apply[F])
-      _ <- BlazeServerBuilder[F]
-        .bindLocal(8080)
-        .withHttpApp(Router(("/", petstoreEndpoint)).orNotFound)
+      petstoreEndpoint <- Stream.eval(petstoreService).map(PetstoreEndpoint.apply[F])
+      exitCode <- BlazeBuilder[F]
+        .bindHttp(8080, "0.0.0.0")
+        .mountService(petstoreEndpoint, "")
         .serve
-        .compile
-        .drain
-    } yield ExitCode.Success
+    } yield exitCode
+  }
 }
 
-object MemoryServerApp extends IOApp {
-  def run(args: List[String]): IO[ExitCode] = HttpServer(MemoryPetstoreService[IO]())
-}
+import ExecutionContext.Implicits.global
+object MemoryServerApp extends HttpServer[IO](MemoryPetstoreService())

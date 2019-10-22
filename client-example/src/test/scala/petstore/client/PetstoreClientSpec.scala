@@ -23,7 +23,6 @@ import org.scalatest.Matchers._
 import org.scalatest._
 import petstore.AnotherPetstoreClient.{CreatePetDuplicatedResponseError, GetPetNotFoundResponseError}
 import petstore.models.{NewPet, Pet, UpdatePet}
-import petstore.{AnotherPetstoreClient, AnotherPetstoreHttpClient, MemoryPetstoreService, PetstoreEndpoint}
 
 import scala.concurrent.ExecutionContext
 
@@ -107,8 +106,6 @@ object PetstoreClientSpec {
   import cats.effect.IO
   import org.http4s.Uri
   import org.http4s.client.Client
-  import org.http4s.implicits._
-  import org.http4s.server.Router
 
   private implicit val cs = IO.contextShift(ExecutionContext.global)
 
@@ -120,7 +117,7 @@ object PetstoreClientSpec {
       service <- MemoryPetstoreService[IO](pets)
       result <- test(
         AnotherPetstoreHttpClient.build(
-          Client.fromHttpApp(Router(("/", PetstoreEndpoint(service))).orNotFound),
+          Client.fromHttpService(PetstoreEndpoint(service)),
           Uri.unsafeFromString("")
         )
       )

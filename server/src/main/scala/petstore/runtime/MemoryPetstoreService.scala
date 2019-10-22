@@ -17,10 +17,10 @@
 package petstore
 
 import models._
-import cats.effect.concurrent.Ref
+import fs2.async.Ref
 import cats.effect.ConcurrentEffect
 import cats.implicits._
-import petstore.AnotherPetstoreClient._
+import petstore.AnotherPetstoreClient.{CreatePetDuplicatedResponseError, GetPetNotFoundResponseError}
 import shapeless.Coproduct
 
 object MemoryPetstoreService {
@@ -28,20 +28,20 @@ object MemoryPetstoreService {
   private def build[F[_]: ConcurrentEffect](ref: Ref[F, List[Pet]]): PetstoreService[F] = new PetstoreService[F] {
     def createPet(newPet: NewPet): F[Either[CreatePetError, Unit]] =
       ref
-        .modify[Either[CreatePetError, Unit]](
+        .modify2(
           list =>
             if (list.exists(_.name === newPet.name))
-              (
-                list,
-                Coproduct[CreatePetError](
-                  CreatePetDuplicatedResponseError(s"Pet with name `${newPet.name}` already exists")
-                ).asLeft[Unit]
-              )
+              (list, None)
             else
-              (
-                Pet(list.map(_.id).foldLeft(0L)(Math.max) + 1, newPet.name, newPet.tag) :: list,
-                ().asRight[CreatePetError]
-              )
+              (Pet(list.map(_.id).foldLeft(0L)(Math.max) + 1, newPet.name, newPet.tag) :: list, ().some)
+        )
+        .map(
+          _._2
+            .fold(
+              Coproduct[CreatePetError](
+                CreatePetDuplicatedResponseError(s"Pet with name `${newPet.name}` already exists")
+              ).asLeft[Unit]
+            )(_.asRight[CreatePetError])
         )
 
     def getPets(limit: Option[Int], name: Option[String]): F[List[Pet]] =
@@ -61,17 +61,18 @@ object MemoryPetstoreService {
 
     def updatePet(id: Long, updatePet: UpdatePet): F[Unit] =
       ref
-        .update(
+        .modify(
           list =>
             list.find(_.id === id).map(_.copy(tag = updatePet.tag.some)).fold(list) {
               _ :: list.filter(_.id =!= id)
             }
         )
+        .void
 
-    def deletePet(id: Long): F[Unit] = ref.update(_.filter(_.id =!= id)).void
+    def deletePet(id: Long): F[Unit] = ref.modify(_.filter(_.id =!= id)).void
 
   }
 
   def apply[F[_]: ConcurrentEffect](init: List[Pet] = List.empty): F[PetstoreService[F]] =
-    Ref.of[F, List[Pet]](init).map(MemoryPetstoreService.build[F])
+    Ref[F, List[Pet]](init).map(MemoryPetstoreService.build[F])
 }
