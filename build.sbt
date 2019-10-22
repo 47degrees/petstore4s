@@ -7,31 +7,8 @@ val V = new {
   val cats           = "1.6.0"
   val catsEffect     = "1.3.0"
   val fs2            = "1.0.4"
+  val scala          = "2.12.10"
 }
-
-lazy val commonSettings = Seq(
-  name := "petstore",
-  version := "0.1.0-SNAPSHOT",
-  scalaVersion := "2.12.8",
-  scalacOptions ++= Seq(
-    "-deprecation",
-    "-encoding",
-    "UTF-8",
-    "-feature",
-    "-language:existentials",
-    "-language:higherKinds",
-    "-language:implicitConversions",
-    "-unchecked",
-    "-Xlint",
-    "-Yno-adapted-args",
-    "-Ywarn-dead-code",
-    "-Ywarn-numeric-widen",
-    "-Ywarn-value-discard",
-    "-Xfuture",
-    "-Ywarn-unused-import"
-  ),
-  scalafmtOnCompile := true
-)
 
 lazy val petstore = project
   .in(file("."))
@@ -80,3 +57,30 @@ lazy val `client-example` = project
       "org.scalatest"     %% "scalatest"      % V.scalatest % Test
     )
   )
+
+lazy val commonSettings = Seq(
+  name := "petstore",
+  orgProjectName := "petstore",
+  description := "Generating http4s code based on OpenApi Specification 3.0.0.",
+  startYear := Option(2019),
+  scalaVersion := V.scala,
+  crossScalaVersions := Seq(V.scala),
+  scalacOptions ++= Seq(
+    "-deprecation",
+    "-encoding",
+    "UTF-8",
+    "-feature",
+    "-language:existentials",
+    "-language:higherKinds",
+    "-language:implicitConversions",
+    "-unchecked",
+    "-Xlint",
+    "-Yno-adapted-args",
+    "-Ywarn-dead-code",
+    "-Ywarn-numeric-widen",
+    "-Ywarn-value-discard",
+    "-Xfuture",
+    "-Ywarn-unused-import"
+  ),
+  scalafmtOnCompile := true
+)
