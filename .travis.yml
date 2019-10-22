@@ -1,0 +1,12 @@
+language: scala
+
+dist: xenial
+
+scala:
+- 2.12.10
+
+jdk:
+- openjdk8
+
+script:
+- sbt ++$TRAVIS_SCALA_VERSION clean compile test

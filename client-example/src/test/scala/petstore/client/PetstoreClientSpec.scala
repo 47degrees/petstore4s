@@ -1,3 +1,19 @@
+/*
+ * Copyright 2019 47 Degrees, LLC. <http://www.47deg.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package petstore
 package client
 
@@ -39,7 +55,9 @@ class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with Eith
     withClient(List(pet(1, "a"), pet(2, "b"))) {
       _.getPet(3).map(
         _.left.value.select[GetPetNotFoundResponseError].value should ===(
-          GetPetNotFoundResponseError("Not found pet with id: 3")))
+          GetPetNotFoundResponseError("Not found pet with id: 3")
+        )
+      )
     }
   }
 
@@ -57,9 +75,9 @@ class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with Eith
     withClient(List(pet(1, "a", "tag".some))) { client =>
       for {
         result <- client.createPet(newPet("a", "tag".some))
-      } yield
-        result.left.value.select[CreatePetDuplicatedResponseError].value should ===(
-          CreatePetDuplicatedResponseError("Pet with name `a` already exists"))
+      } yield result.left.value.select[CreatePetDuplicatedResponseError].value should ===(
+        CreatePetDuplicatedResponseError("Pet with name `a` already exists")
+      )
     }
   }
 
@@ -77,9 +95,9 @@ class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with Eith
       for {
         _         <- client.deletePet(1)
         actualPet <- client.getPet(1)
-      } yield
-        actualPet.left.value.select[GetPetNotFoundResponseError].value should ===(
-          GetPetNotFoundResponseError("Not found pet with id: 1"))
+      } yield actualPet.left.value.select[GetPetNotFoundResponseError].value should ===(
+        GetPetNotFoundResponseError("Not found pet with id: 1")
+      )
     }
   }
 
@@ -104,7 +122,8 @@ object PetstoreClientSpec {
         AnotherPetstoreHttpClient.build(
           Client.fromHttpApp(Router(("/", PetstoreEndpoint(service))).orNotFound),
           Uri.unsafeFromString("")
-        ))
+        )
+      )
     } yield result).unsafeRunSync()
 
 }
