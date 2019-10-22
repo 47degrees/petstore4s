@@ -24,8 +24,6 @@ import org.scalatest._
 import petstore.AnotherPetstoreClient.{CreatePetDuplicatedResponseError, GetPetNotFoundResponseError}
 import petstore.models.{NewPet, Pet, UpdatePet}
 
-import scala.concurrent.ExecutionContext
-
 class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with EitherValues with OptionValues {
   import PetstoreClientSpec._
 
