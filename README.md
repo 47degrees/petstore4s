@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/47deg/petstore4s.svg?branch=master)](https://travis-ci.org/47deg/petstore4s)
+
 # Petstore
 
 This project shows how to generate code (http client and server) based on OpenApi Specification 3.0.0.
