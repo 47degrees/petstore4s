@@ -107,8 +107,6 @@ object PetstoreClientSpec {
   import org.http4s.Uri
   import org.http4s.client.Client
 
-  private implicit val cs = IO.contextShift(ExecutionContext.global)
-
   def pet(id: Long, name: String, tag: Option[String] = none): Pet = Pet(id, name, tag)
   def newPet(name: String, tag: Option[String] = none): NewPet     = NewPet(name, tag)
 
