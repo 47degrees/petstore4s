@@ -1,2 +1,3 @@
-addSbtPlugin("io.get-coursier" % "sbt-coursier" % "1.0.2")
-addSbtPlugin("com.lucidchart" % "sbt-scalafmt-coursier" % "1.15")
+addSbtPlugin("com.47deg"         % "sbt-org-policies" % "0.12.0-M2")
+addSbtPlugin("org.scalameta"     % "sbt-scalafmt"     % "2.2.0")
+addSbtPlugin("io.higherkindness" % "sbt-mu-idlgen"    % "0.19.0")

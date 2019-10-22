@@ -1,10 +1,31 @@
-package petstore
+/*
+ * Copyright 2019 47 Degrees, LLC. <http://www.47deg.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import org.scalatest._
-import Matchers._
-import org.scalactic.TypeCheckedTripleEquals
+package petstore
+package client
+
 import cats.implicits._
-import models._
+import org.scalactic.TypeCheckedTripleEquals
+import org.scalatest.Matchers._
+import org.scalatest._
+import petstore.AnotherPetstoreClient.{CreatePetDuplicatedResponseError, GetPetNotFoundResponseError}
+import petstore.models.{NewPet, Pet, UpdatePet}
+import petstore.{AnotherPetstoreClient, AnotherPetstoreHttpClient, MemoryPetstoreService, PetstoreEndpoint}
+
+import scala.concurrent.ExecutionContext
 
 class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with EitherValues with OptionValues {
   import PetstoreClientSpec._
@@ -32,7 +53,11 @@ class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with Eith
 
   it should "not get the pets by id when the pet does not exist" in {
     withClient(List(pet(1, "a"), pet(2, "b"))) {
-      _.getPet(3).map(_.left.value.select[NotFoundError].value should ===(NotFoundError("Not found pet with id: 3")))
+      _.getPet(3).map(
+        _.left.value.select[GetPetNotFoundResponseError].value should ===(
+          GetPetNotFoundResponseError("Not found pet with id: 3")
+        )
+      )
     }
   }
 
@@ -50,9 +75,9 @@ class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with Eith
     withClient(List(pet(1, "a", "tag".some))) { client =>
       for {
         result <- client.createPet(newPet("a", "tag".some))
-      } yield
-        result.left.value.select[DuplicatedPetError].value should ===(
-          DuplicatedPetError("Pet with name `a` already exists"))
+      } yield result.left.value.select[CreatePetDuplicatedResponseError].value should ===(
+        CreatePetDuplicatedResponseError("Pet with name `a` already exists")
+      )
     }
   }
 
@@ -70,30 +95,35 @@ class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with Eith
       for {
         _         <- client.deletePet(1)
         actualPet <- client.getPet(1)
-      } yield actualPet.left.value.select[NotFoundError].value should ===(NotFoundError("Not found pet with id: 1"))
+      } yield actualPet.left.value.select[GetPetNotFoundResponseError].value should ===(
+        GetPetNotFoundResponseError("Not found pet with id: 1")
+      )
     }
   }
 
 }
 
 object PetstoreClientSpec {
+  import cats.effect.IO
   import org.http4s.Uri
   import org.http4s.client.Client
-  import cats.effect.IO
+  import org.http4s.implicits._
+  import org.http4s.server.Router
 
-  import runtime._
+  private implicit val cs = IO.contextShift(ExecutionContext.global)
 
   def pet(id: Long, name: String, tag: Option[String] = none): Pet = Pet(id, name, tag)
   def newPet(name: String, tag: Option[String] = none): NewPet     = NewPet(name, tag)
 
-  def withClient(pets: List[Pet] = List.empty)(test: PetstoreClient[IO] => IO[Assertion]): Assertion =
+  def withClient(pets: List[Pet] = List.empty)(test: AnotherPetstoreClient[IO] => IO[Assertion]): Assertion =
     (for {
       service <- MemoryPetstoreService[IO](pets)
       result <- test(
-        PetstoreHttpClient.build(
-          Client.fromHttpService(PetstoreEndpoint(service)),
+        AnotherPetstoreHttpClient.build(
+          Client.fromHttpApp(Router(("/", PetstoreEndpoint(service))).orNotFound),
           Uri.unsafeFromString("")
-        ))
+        )
+      )
     } yield result).unsafeRunSync()
 
 }

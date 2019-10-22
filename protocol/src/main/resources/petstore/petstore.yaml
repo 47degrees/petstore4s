@@ -1,7 +1,7 @@
 openapi: "3.0.0"
 info:
   version: 1.0.0
-  title: Swagger Petstore
+  title: AnotherPetstore
   license:
     name: MIT
 servers:
@@ -24,7 +24,7 @@ paths:
           description: Items that contains in name the provided string
           required: false
           schema:
-            type: integer
+            type: string
       responses:
         '200':
           description: A paged array of pets
@@ -36,6 +36,7 @@ paths:
       summary: Create a pet
       operationId: createPet
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -54,7 +55,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/PetError"
   /pets/{petId}:
     put:
       summary: Update a pet
@@ -64,9 +65,10 @@ paths:
           required: true
           description: The id of the pet to update
           schema:
-            type: string
+            type: integer
       operationId: updatePet
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -83,7 +85,7 @@ paths:
           required: true
           description: The id of the pet to delete
           schema:
-            type: string
+            type: integer
       responses:
         '200':
           description: Null response
@@ -96,7 +98,7 @@ paths:
           required: true
           description: The id of the pet to retrieve
           schema:
-            type: string
+            type: integer
       responses:
         '200':
           description: Expected response to a valid request
@@ -115,7 +117,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/PetError"
 components:
   schemas:
     Pet:
@@ -148,7 +150,7 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/Pet"
-    Error:
+    PetError:
       required:
         - code
         - message
@@ -158,3 +160,21 @@ components:
           format: int32
         message:
           type: string
+    Owner:
+      required:
+        - person
+      properties:
+        address: 
+          type: string
+        person:
+          type: object
+          required:
+           - name
+           - surname
+          properties:
+            name:
+              type: string
+            surname:
+              type: string
+            age: 
+              type: integer
