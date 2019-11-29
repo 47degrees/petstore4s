@@ -19,15 +19,17 @@ package client
 
 import cats.implicits._
 import org.scalactic.TypeCheckedTripleEquals
-import org.scalatest.Matchers._
+import matchers.should.Matchers._
 import org.scalatest._
 import petstore.AnotherPetstoreClient.{CreatePetDuplicatedResponseError, GetPetNotFoundResponseError}
 import petstore.models.{NewPet, Pet, UpdatePet}
 import petstore.{AnotherPetstoreClient, AnotherPetstoreHttpClient, MemoryPetstoreService, PetstoreEndpoint}
 
 import scala.concurrent.ExecutionContext
+import org.scalatest.matchers
+import org.scalatest.flatspec.AnyFlatSpec
 
-class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with EitherValues with OptionValues {
+class PetstoreClientSpec extends AnyFlatSpec with TypeCheckedTripleEquals with EitherValues with OptionValues {
   import PetstoreClientSpec._
 
   "Petstore client" should "get the pets" in {
@@ -100,7 +102,6 @@ class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with Eith
       )
     }
   }
-
 }
 
 object PetstoreClientSpec {
@@ -125,5 +126,4 @@ object PetstoreClientSpec {
         )
       )
     } yield result).unsafeRunSync()
-
 }
