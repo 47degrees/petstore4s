@@ -6,7 +6,7 @@ This project shows how to generate code (an HTTP client and server) based on Ope
 
 ## Specification
 
-This is the [specification](./protocol/src/main/resources/petstore/petstore.yaml) input, base on a **petstore**, we are using to define the code we want to generate. If you want to view the specification in a more human-readable format, please use the following [editor](https://editor.swagger.io/).
+This is the [specification](./protocol/src/main/resources/petstore/petstore.yaml) input, based on a **petstore**, we are using to define the code we want to generate. If you want to view the specification in a more human-readable format, please use the following [editor](https://editor.swagger.io/).
 
 ## How to use it
 
@@ -20,6 +20,7 @@ In a separate terminal, run the client:
 
 ```sh
 > sbt client-example/run
+```
 
 You should see some log output like this:
 
