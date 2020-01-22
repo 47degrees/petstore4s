@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2019-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,20 +28,19 @@ object MemoryPetstoreService {
   private def build[F[_]: ConcurrentEffect](ref: Ref[F, List[Pet]]): PetstoreService[F] = new PetstoreService[F] {
     def createPet(newPet: NewPet): F[Either[CreatePetError, Unit]] =
       ref
-        .modify[Either[CreatePetError, Unit]](
-          list =>
-            if (list.exists(_.name === newPet.name))
-              (
-                list,
-                Coproduct[CreatePetError](
-                  CreatePetDuplicatedResponseError(s"Pet with name `${newPet.name}` already exists")
-                ).asLeft[Unit]
-              )
-            else
-              (
-                Pet(list.map(_.id).foldLeft(0L)(Math.max) + 1, newPet.name, newPet.tag) :: list,
-                ().asRight[CreatePetError]
-              )
+        .modify[Either[CreatePetError, Unit]](list =>
+          if (list.exists(_.name === newPet.name))
+            (
+              list,
+              Coproduct[CreatePetError](
+                CreatePetDuplicatedResponseError(s"Pet with name `${newPet.name}` already exists")
+              ).asLeft[Unit]
+            )
+          else
+            (
+              Pet(list.map(_.id).foldLeft(0L)(Math.max) + 1, newPet.name, newPet.tag) :: list,
+              ().asRight[CreatePetError]
+            )
         )
 
     def getPets(limit: Option[Int], name: Option[String]): F[List[Pet]] =
@@ -61,11 +60,10 @@ object MemoryPetstoreService {
 
     def updatePet(id: Long, updatePet: UpdatePet): F[Unit] =
       ref
-        .update(
-          list =>
-            list.find(_.id === id).map(_.copy(tag = updatePet.tag.some)).fold(list) {
-              _ :: list.filter(_.id =!= id)
-            }
+        .update(list =>
+          list.find(_.id === id).map(_.copy(tag = updatePet.tag.some)).fold(list) {
+            _ :: list.filter(_.id =!= id)
+          }
         )
 
     def deletePet(id: Long): F[Unit] = ref.update(_.filter(_.id =!= id)).void
