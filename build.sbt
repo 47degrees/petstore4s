@@ -1,7 +1,7 @@
 val V = new {
   val circe          = "0.11.1"
-  val http4s         = "0.20.19"
-  val scalatest      = "3.0.8"
+  val http4s         = "0.20.18"
+  val scalatest      = "3.1.1"
   val logbackClassic = "1.2.3"
   val log4cats       = "1.0.1"
   val cats           = "1.6.0"
