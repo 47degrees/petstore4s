@@ -72,9 +72,7 @@ class PetstoreEndpoint[F[_]: ConcurrentEffect](petstoreService: PetstoreService[
           .flatMap(_.fold(_.map(GetPetResponseHandler).unify, Ok(_)))
 
       case req @ PUT -> Root / "pets" / LongVar(id) =>
-        req.decode[UpdatePet] { newPet =>
-          petstoreService.updatePet(id, newPet).flatMap(_ => Ok())
-        }
+        req.decode[UpdatePet](newPet => petstoreService.updatePet(id, newPet).flatMap(_ => Ok()))
       case req @ DELETE -> Root / "pets" / LongVar(id) =>
         petstoreService.deletePet(id).flatMap(Ok(_))
     }
