@@ -101,7 +101,6 @@ class PetstoreClientSpec extends AnyFlatSpec with TypeCheckedTripleEquals with E
       )
     }
   }
-
 }
 
 object PetstoreClientSpec {
@@ -126,5 +125,4 @@ object PetstoreClientSpec {
         )
       )
     } yield result).unsafeRunSync()
-
 }
