@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2019-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,20 +22,14 @@ import java.time.format.DateTimeFormatter
 import org.http4s.QueryParamEncoder
 
 package object client {
-
   def localDateTimeQueryParamEncoder(formatter: DateTimeFormatter): QueryParamEncoder[LocalDateTime] =
-    QueryParamEncoder[String].contramap[LocalDateTime] { i: LocalDateTime =>
-      formatter.format(i)
-    }
+    QueryParamEncoder[String].contramap[LocalDateTime] { i: LocalDateTime => formatter.format(i) }
 
   def localDateQueryParamEncoder(formatter: DateTimeFormatter): QueryParamEncoder[LocalDate] =
-    QueryParamEncoder[String].contramap[LocalDate] { i: LocalDate =>
-      formatter.format(i)
-    }
+    QueryParamEncoder[String].contramap[LocalDate] { i: LocalDate => formatter.format(i) }
 
   implicit val isoLocalDateTimeEncoder: QueryParamEncoder[LocalDateTime] =
     localDateTimeQueryParamEncoder(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
   implicit val isoLocalDateEncoder: QueryParamEncoder[LocalDate] =
     localDateQueryParamEncoder(DateTimeFormatter.ISO_LOCAL_DATE)
-
 }

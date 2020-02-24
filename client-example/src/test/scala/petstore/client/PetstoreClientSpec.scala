@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 47 Degrees, LLC. <http://www.47deg.com>
+ * Copyright 2019-2020 47 Degrees, LLC. <http://www.47deg.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,36 +19,37 @@ package client
 
 import cats.implicits._
 import org.scalactic.TypeCheckedTripleEquals
-import org.scalatest.Matchers._
 import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers._
 import petstore.AnotherPetstoreClient.{CreatePetDuplicatedResponseError, GetPetNotFoundResponseError}
 import petstore.models.{NewPet, Pet, UpdatePet}
 import petstore.{AnotherPetstoreClient, AnotherPetstoreHttpClient, MemoryPetstoreService, PetstoreEndpoint}
 
 import scala.concurrent.ExecutionContext
 
-class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with EitherValues with OptionValues {
+class PetstoreClientSpec extends AnyFlatSpec with TypeCheckedTripleEquals with EitherValues with OptionValues {
   import PetstoreClientSpec._
 
   "Petstore client" should "get the pets" in {
     val expectedPets = List(pet(1, "a"), pet(2, "b"), pet(3, "c", "tag1".some))
-    withClient(expectedPets) { _.getPets(none, none).map(_ should ===(expectedPets)) }
+    withClient(expectedPets)(_.getPets(none, none).map(_ should ===(expectedPets)))
   }
 
   it should "get the pets when the limit is established" in {
     val expectedPets = List(pet(1, "a"), pet(2, "b"))
-    withClient(expectedPets) { _.getPets(1.some, none).map(_ should ===(expectedPets.take(1))) }
+    withClient(expectedPets)(_.getPets(1.some, none).map(_ should ===(expectedPets.take(1))))
   }
 
   it should "get the pets when the name is established" in {
     val expectedPets = List(pet(1, "abb"), pet(3, "ma"))
     val pets         = List(pet(2, "bx"), pet(4, "oo")) ++ expectedPets
-    withClient(pets) { _.getPets(none, "a".some).map(_ should ===(expectedPets)) }
+    withClient(pets)(_.getPets(none, "a".some).map(_ should ===(expectedPets)))
   }
 
   it should "get the pets by id" in {
     val expectedPet = pet(1, "a")
-    withClient(List(expectedPet, pet(2, "b"))) { _.getPet(1).map(_.right.value should ===(expectedPet)) }
+    withClient(List(expectedPet, pet(2, "b")))(_.getPet(1).map(_.right.value should ===(expectedPet)))
   }
 
   it should "not get the pets by id when the pet does not exist" in {
@@ -100,7 +101,6 @@ class PetstoreClientSpec extends FlatSpec with TypeCheckedTripleEquals with Eith
       )
     }
   }
-
 }
 
 object PetstoreClientSpec {
@@ -125,5 +125,4 @@ object PetstoreClientSpec {
         )
       )
     } yield result).unsafeRunSync()
-
 }

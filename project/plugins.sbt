@@ -1,3 +1,2 @@
-addSbtPlugin("com.47deg"         % "sbt-org-policies" % "0.12.0-M3")
-addSbtPlugin("org.scalameta"     % "sbt-scalafmt"     % "2.2.1")
-addSbtPlugin("io.higherkindness" % "sbt-mu-idlgen"    % "0.19.1")
+addSbtPlugin("com.47deg"         % "sbt-org-policies" % "0.13.0")
+addSbtPlugin("io.higherkindness" % "sbt-mu-idlgen"    % "0.20.1")

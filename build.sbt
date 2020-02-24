@@ -1,7 +1,8 @@
 val V = new {
   val circe          = "0.12.3"
-  val http4s         = "0.20.13"
-  val scalatest      = "3.0.8"
+  val circeJava8     = "0.11.1"
+  val http4s         = "0.20.19"
+  val scalatest      = "3.1.0"
   val logbackClassic = "1.2.3"
   val log4cats       = "1.0.1"
   val cats           = "1.6.0"
@@ -50,7 +51,7 @@ lazy val `client-example` = project
   .settings(
     moduleName := "petstore4s-client",
     libraryDependencies ++= Seq(
-      "io.circe"          %% "circe-java8"    % V.circe,
+      "io.circe"          %% "circe-java8"    % V.circeJava8,
       "io.chrisdavenport" %% "log4cats-slf4j" % V.log4cats,
       "ch.qos.logback"    % "logback-classic" % V.logbackClassic,
       "org.scalactic"     %% "scalactic"      % V.scalatest % Test,
