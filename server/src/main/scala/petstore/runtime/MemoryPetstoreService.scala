@@ -45,9 +45,7 @@ object MemoryPetstoreService {
 
     def getPets(limit: Option[Int], name: Option[String]): F[List[Pet]] =
       ref.get
-        .map { x =>
-          limit.fold(x)(x.take).filter(_.name.contains(name.getOrElse("")))
-        }
+        .map(x => limit.fold(x)(x.take).filter(_.name.contains(name.getOrElse(""))))
 
     def getPet(id: Long): F[Either[GetPetError, Pet]] =
       ref.get

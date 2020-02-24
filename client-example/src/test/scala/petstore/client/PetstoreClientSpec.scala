@@ -33,23 +33,23 @@ class PetstoreClientSpec extends AnyFlatSpec with TypeCheckedTripleEquals with E
 
   "Petstore client" should "get the pets" in {
     val expectedPets = List(pet(1, "a"), pet(2, "b"), pet(3, "c", "tag1".some))
-    withClient(expectedPets) { _.getPets(none, none).map(_ should ===(expectedPets)) }
+    withClient(expectedPets)(_.getPets(none, none).map(_ should ===(expectedPets)))
   }
 
   it should "get the pets when the limit is established" in {
     val expectedPets = List(pet(1, "a"), pet(2, "b"))
-    withClient(expectedPets) { _.getPets(1.some, none).map(_ should ===(expectedPets.take(1))) }
+    withClient(expectedPets)(_.getPets(1.some, none).map(_ should ===(expectedPets.take(1))))
   }
 
   it should "get the pets when the name is established" in {
     val expectedPets = List(pet(1, "abb"), pet(3, "ma"))
     val pets         = List(pet(2, "bx"), pet(4, "oo")) ++ expectedPets
-    withClient(pets) { _.getPets(none, "a".some).map(_ should ===(expectedPets)) }
+    withClient(pets)(_.getPets(none, "a".some).map(_ should ===(expectedPets)))
   }
 
   it should "get the pets by id" in {
     val expectedPet = pet(1, "a")
-    withClient(List(expectedPet, pet(2, "b"))) { _.getPet(1).map(_.right.value should ===(expectedPet)) }
+    withClient(List(expectedPet, pet(2, "b")))(_.getPet(1).map(_.right.value should ===(expectedPet)))
   }
 
   it should "not get the pets by id when the pet does not exist" in {
