@@ -65,7 +65,6 @@ object MemoryPetstoreService {
         )
 
     def deletePet(id: Long): F[Unit] = ref.update(_.filter(_.id =!= id)).void
-
   }
 
   def apply[F[_]: ConcurrentEffect](init: List[Pet] = List.empty): F[PetstoreService[F]] =

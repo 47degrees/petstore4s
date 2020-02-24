@@ -20,8 +20,8 @@ package client
 import cats.effect._
 import io.chrisdavenport.log4cats.SelfAwareStructuredLogger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
-import org.http4s._
 import org.http4s.client.blaze.BlazeClientBuilder
+import org.http4s.implicits._
 import petstore.models.{NewPet, UpdatePet}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -30,7 +30,6 @@ object Boot extends IOApp {
   lazy val L: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
 
   def run(args: List[String]): IO[ExitCode] = {
-
     BlazeClientBuilder[IO](global).resource.use { client =>
       val petStoreClient: AnotherPetstoreClient[IO] = AnotherPetstoreHttpClient.build[IO](
         client,
@@ -56,8 +55,6 @@ object Boot extends IOApp {
         myPets         <- petStoreClient.getPets(limit = None, name = None)
         _              <- L.info(s"My pet list updated = $myPets")
       } yield ExitCode.Success)
-
     }
-
   }
 }
