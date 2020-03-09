@@ -1,6 +1,6 @@
 # Contributing
 
-Discussion around petstore happens in the [Gitter channel](https://gitter.im/47degrees/petstore) as well as on
+Discussion around petstore happens in the [Gitter channel](https://gitter.im/47deg/petstore) as well as on
 [GitHub issues](https://github.com/47degrees/petstore/issues) and [pull requests](https://github.com/47degrees/petstore/pulls).
 
 Feel free to open an issue if you notice a bug, have an idea for a feature, or have a question about

@@ -1,3 +1,5 @@
+import sbtorgpolicies.model.GitHubSettings
+
 val V = new {
   val circe          = "0.13.0"
   val circeJava8     = "0.11.1"
@@ -61,6 +63,14 @@ lazy val `client-example` = project
 
 lazy val commonSettings = Seq(
   name := "petstore",
+  orgGithubSetting := GitHubSettings(
+    organization = "47degrees",
+    project = (name in LocalRootProject).value,
+    organizationName = "47 Degrees",
+    groupId = "com.47deg",
+    organizationHomePage = url("http://47deg.com"),
+    organizationEmail = "hello@47deg.com"
+  ),
   orgProjectName := "petstore",
   description := "Generating http4s code based on OpenApi Specification 3.0.0.",
   startYear := Option(2019),
