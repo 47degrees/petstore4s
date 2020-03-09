@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/47deg/petstore4s.svg?branch=master)](https://travis-ci.org/47deg/petstore4s)
+[![Build Status](https://travis-ci.org/47degrees/petstore4s.svg?branch=master)](https://travis-ci.org/47degrees/petstore4s)
 
 # Petstore
 
