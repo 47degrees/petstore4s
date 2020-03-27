@@ -95,3 +95,8 @@ lazy val commonSettings = Seq(
   ),
   scalafmtOnCompile := true
 )
+
+addCommandAlias("ci-test", "test")
+
+//Not needed if using `sbt-ci-release`
+addCommandAlias("ci-release", "publish")
