@@ -97,6 +97,7 @@ lazy val commonSettings = Seq(
 )
 
 addCommandAlias("ci-test", "test")
+addCommandAlias("ci-docs", "compile")
 
 //Not needed if using `sbt-ci-release`
 addCommandAlias("ci-release", "publish")
