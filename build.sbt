@@ -3,7 +3,7 @@ import sbtorgpolicies.model.GitHubSettings
 val V = new {
   val circe          = "0.13.0"
   val circeJava8     = "0.11.1"
-  val http4s         = "0.21.2"
+  val http4s         = "0.21.3"
   val scalatest      = "3.1.0"
   val logbackClassic = "1.2.3"
   val log4cats       = "1.0.1"

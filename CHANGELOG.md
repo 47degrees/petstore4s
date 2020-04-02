@@ -6,7 +6,7 @@
 
 **Merged pull requests:**
 
-- Update http4s-blaze-client, ... to 0.21.2 [\#47](https://github.com/47degrees/petstore4s/pull/47) ([scala-steward](https://github.com/scala-steward))
+- Update http4s-blaze-client, ... to 0.21.3 [\#47](https://github.com/47degrees/petstore4s/pull/47) ([scala-steward](https://github.com/scala-steward))
 - Update sbt-org-policies to 0.13.3 [\#46](https://github.com/47degrees/petstore4s/pull/46) ([scala-steward](https://github.com/scala-steward))
 - Mergify: configuration update [\#45](https://github.com/47degrees/petstore4s/pull/45) ([juanpedromoreno](https://github.com/juanpedromoreno))
 - Update sbt-org-policies to 0.13.2 [\#44](https://github.com/47degrees/petstore4s/pull/44) ([scala-steward](https://github.com/scala-steward))
