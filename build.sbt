@@ -59,7 +59,7 @@ lazy val `client-example` = project
   )
 
 lazy val commonSettings = Seq(
-      organization := "com.47deg",
+  organization := "com.47deg",
   scalaVersion := V.scala,
   scalacOptions ++= Seq(
     "-deprecation",
