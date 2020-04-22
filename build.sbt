@@ -1,4 +1,4 @@
-addCommandAlias("ci-test", "scalafmtCheck; scalafmtSbtCheck; project-docs/mdoc; test")
+addCommandAlias("ci-test", "scalafmtCheck; scalafmtSbtCheck; test")
 addCommandAlias("ci-docs", "project-docs/mdoc; headerCreateAll")
 
 val V = new {
