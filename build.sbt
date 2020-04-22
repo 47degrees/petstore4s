@@ -1,16 +1,14 @@
-import sbtorgpolicies.model.GitHubSettings
+addCommandAlias("ci-test", "scalafmtCheck; scalafmtSbtCheck; test")
+addCommandAlias("ci-docs", "project-docs/mdoc; headerCreateAll")
 
 val V = new {
   val circe          = "0.13.0"
-  val circeJava8     = "0.11.1"
-  val http4s         = "0.21.2"
-  val scalatest      = "3.1.0"
+  val http4s         = "0.21.3"
+  val scalatest      = "3.1.1"
   val logbackClassic = "1.2.3"
   val log4cats       = "1.0.1"
-  val cats           = "1.6.0"
-  val catsEffect     = "1.3.0"
-  val fs2            = "1.0.4"
-  val scala          = "2.12.10"
+  val cats           = "2.1.1"
+  val scala          = "2.13.1"
 }
 
 lazy val petstore = project
@@ -22,11 +20,11 @@ lazy val protocol = project
   .settings(commonSettings)
   .settings(
     moduleName := "petstore4s-client-example",
-    idlType := "openapi",
-    srcGenSourceDirs := Seq((Compile / resourceDirectory).value),
-    srcGenTargetDir := (Compile / sourceManaged).value / "compiled_openapi",
-    sourceGenerators in Compile += (Compile / srcGen).taskValue,
-    idlGenOpenApiHttpImpl := higherkindness.mu.rpc.idlgen.openapi.OpenApiSrcGenerator.HttpImpl.Http4sV20,
+    muSrcGenIdlType := higherkindness.mu.rpc.srcgen.Model.IdlType.OpenAPI,
+    muSrcGenSourceDirs := Seq((Compile / resourceDirectory).value),
+    muSrcGenIdlTargetDir := (Compile / sourceManaged).value / "compiled_openapi",
+    sourceGenerators in Compile += (Compile / muSrcGen).taskValue,
+    muSrcGenOpenApiHttpImpl := higherkindness.mu.rpc.srcgen.openapi.OpenApiSrcGenerator.HttpImpl.Http4sV20,
     libraryDependencies ++= Seq(
       "io.circe"   %% "circe-core"          % V.circe,
       "io.circe"   %% "circe-generic"       % V.circe,
@@ -53,7 +51,6 @@ lazy val `client-example` = project
   .settings(
     moduleName := "petstore4s-client",
     libraryDependencies ++= Seq(
-      "io.circe"          %% "circe-java8"    % V.circeJava8,
       "io.chrisdavenport" %% "log4cats-slf4j" % V.log4cats,
       "ch.qos.logback"    % "logback-classic" % V.logbackClassic,
       "org.scalactic"     %% "scalactic"      % V.scalatest % Test,
@@ -62,20 +59,8 @@ lazy val `client-example` = project
   )
 
 lazy val commonSettings = Seq(
-  name := "petstore",
-  orgGithubSetting := GitHubSettings(
-    organization = "47degrees",
-    project = (name in LocalRootProject).value,
-    organizationName = "47 Degrees",
-    groupId = "com.47deg",
-    organizationHomePage = url("http://47deg.com"),
-    organizationEmail = "hello@47deg.com"
-  ),
-  orgProjectName := "petstore",
-  description := "Generating http4s code based on OpenApi Specification 3.0.0.",
-  startYear := Option(2019),
+  organization := "com.47deg",
   scalaVersion := V.scala,
-  crossScalaVersions := Seq(V.scala),
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding",
@@ -86,18 +71,9 @@ lazy val commonSettings = Seq(
     "-language:implicitConversions",
     "-unchecked",
     "-Xlint",
-    "-Yno-adapted-args",
     "-Ywarn-dead-code",
     "-Ywarn-numeric-widen",
-    "-Ywarn-value-discard",
-    "-Xfuture",
-    "-Ywarn-unused-import"
+    "-Ywarn-value-discard"
   ),
   scalafmtOnCompile := true
 )
-
-addCommandAlias("ci-test", "test")
-addCommandAlias("ci-docs", "compile")
-
-//Not needed if using `sbt-ci-release`
-addCommandAlias("ci-release", "publish")
