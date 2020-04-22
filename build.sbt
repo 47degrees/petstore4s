@@ -1,5 +1,5 @@
 addCommandAlias("ci-test", "scalafmtCheck; scalafmtSbtCheck; test")
-addCommandAlias("ci-docs", "project-docs/mdoc; headerCreateAll")
+addCommandAlias("ci-docs", "project-docs/mdoc")
 
 val V = new {
   val circe          = "0.13.0"
@@ -14,6 +14,7 @@ val V = new {
 lazy val petstore = project
   .in(file("."))
   .settings(commonSettings)
+  .dependsOn(protocol, server, `client-example`)
   .aggregate(protocol, server, `client-example`)
 
 lazy val protocol = project
@@ -57,6 +58,16 @@ lazy val `client-example` = project
       "org.scalatest"     %% "scalatest"      % V.scalatest % Test
     )
   )
+
+lazy val `project-docs` = (project in file(".docs"))
+  .dependsOn(petstore)
+  .aggregate(petstore)
+  .settings(commonSettings)
+  .settings(moduleName := "petstore4s-project-docs")
+  .settings(mdocIn := file(".docs"))
+  .settings(mdocOut := file("."))
+  .settings(skip in publish := true)
+  .enablePlugins(MdocPlugin)
 
 lazy val commonSettings = Seq(
   organization := "com.47deg",
