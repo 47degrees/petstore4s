@@ -27,12 +27,13 @@ object HttpServer {
   def apply[F[_]: ConcurrentEffect: ContextShift: Timer](petstoreService: F[PetstoreService[F]]): F[ExitCode] =
     for {
       petstoreEndpoint <- petstoreService.map(PetstoreEndpoint.apply[F])
-      _ <- BlazeServerBuilder[F]
-        .bindLocal(8080)
-        .withHttpApp(Router(("/", petstoreEndpoint)).orNotFound)
-        .serve
-        .compile
-        .drain
+      _ <-
+        BlazeServerBuilder[F]
+          .bindLocal(8080)
+          .withHttpApp(Router(("/", petstoreEndpoint)).orNotFound)
+          .serve
+          .compile
+          .drain
     } yield ExitCode.Success
 }
 
