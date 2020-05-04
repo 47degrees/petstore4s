@@ -1,4 +1,4 @@
-addCommandAlias("ci-test", "scalafmtCheck; scalafmtSbtCheck; test")
+addCommandAlias("ci-test", "scalafmtCheckAll; scalafmtSbtCheck; test")
 addCommandAlias("ci-docs", "project-docs/mdoc")
 
 val V = new {
@@ -40,9 +40,9 @@ lazy val server = project
   .settings(
     moduleName := "petstore4s-server",
     libraryDependencies ++= Seq(
-      "org.http4s"     %% "http4s-blaze-server" % V.http4s,
-      "org.http4s"     %% "http4s-dsl"          % V.http4s,
-      "ch.qos.logback" % "logback-classic"      % V.logbackClassic
+      "org.http4s"    %% "http4s-blaze-server" % V.http4s,
+      "org.http4s"    %% "http4s-dsl"          % V.http4s,
+      "ch.qos.logback" % "logback-classic"     % V.logbackClassic
     )
   )
 
@@ -52,10 +52,10 @@ lazy val `client-example` = project
   .settings(
     moduleName := "petstore4s-client",
     libraryDependencies ++= Seq(
-      "io.chrisdavenport" %% "log4cats-slf4j" % V.log4cats,
-      "ch.qos.logback"    % "logback-classic" % V.logbackClassic,
-      "org.scalactic"     %% "scalactic"      % V.scalatest % Test,
-      "org.scalatest"     %% "scalatest"      % V.scalatest % Test
+      "io.chrisdavenport" %% "log4cats-slf4j"  % V.log4cats,
+      "ch.qos.logback"     % "logback-classic" % V.logbackClassic,
+      "org.scalactic"     %% "scalactic"       % V.scalatest % Test,
+      "org.scalatest"     %% "scalatest"       % V.scalatest % Test
     )
   )
 
