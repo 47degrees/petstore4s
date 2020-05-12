@@ -6,7 +6,7 @@ val V = new {
   val http4s         = "0.21.3"
   val scalatest      = "3.1.1"
   val logbackClassic = "1.2.3"
-  val log4cats       = "1.0.1"
+  val log4cats       = "1.1.1"
   val cats           = "2.1.1"
   val scala          = "2.13.1"
 }
