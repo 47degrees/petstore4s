@@ -85,6 +85,5 @@ lazy val commonSettings = Seq(
     "-Ywarn-dead-code",
     "-Ywarn-numeric-widen",
     "-Ywarn-value-discard"
-  ),
-  scalafmtOnCompile := true
+  )
 )
