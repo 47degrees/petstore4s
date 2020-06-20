@@ -2,12 +2,7 @@ ThisBuild / organization := "com.47deg"
 ThisBuild / scalaVersion := "2.13.2"
 
 addCommandAlias("ci-test", "scalafmtCheckAll; scalafmtSbtCheck; test")
-addCommandAlias("ci-docs", "documentation/mdoc")
-
-lazy val petstore = project
-  .in(file("."))
-  .dependsOn(protocol, server, `client-example`)
-  .aggregate(protocol, server, `client-example`)
+addCommandAlias("ci-docs", "mdoc")
 
 lazy val protocol = project
   .settings(
