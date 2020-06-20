@@ -1,5 +1,6 @@
 ThisBuild / organization := "com.47deg"
 ThisBuild / scalaVersion := "2.13.2"
+ThisBuild / skip in publish := true
 
 addCommandAlias("ci-test", "scalafmtCheckAll; scalafmtSbtCheck; test")
 addCommandAlias("ci-docs", "mdoc")
@@ -45,5 +46,4 @@ lazy val `client-example` = project
 
 lazy val documentation = project
   .settings(mdocOut := file("."))
-  .settings(skip in publish := true)
   .enablePlugins(MdocPlugin)
