@@ -1,3 +1,6 @@
+ThisBuild / organization := "com.47deg"
+ThisBuild / scalaVersion := "2.13.1"
+
 addCommandAlias("ci-test", "scalafmtCheckAll; scalafmtSbtCheck; test")
 addCommandAlias("ci-docs", "project-docs/mdoc")
 
@@ -8,7 +11,6 @@ val V = new {
   val logbackClassic = "1.2.3"
   val log4cats       = "1.1.1"
   val cats           = "2.1.1"
-  val scala          = "2.13.1"
 }
 
 lazy val petstore = project
@@ -70,8 +72,6 @@ lazy val `project-docs` = (project in file(".docs"))
   .enablePlugins(MdocPlugin)
 
 lazy val commonSettings = Seq(
-  organization := "com.47deg",
-  scalaVersion := V.scala,
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding",
