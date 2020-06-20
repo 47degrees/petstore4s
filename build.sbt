@@ -2,7 +2,7 @@ ThisBuild / organization := "com.47deg"
 ThisBuild / scalaVersion := "2.13.2"
 
 addCommandAlias("ci-test", "scalafmtCheckAll; scalafmtSbtCheck; test")
-addCommandAlias("ci-docs", "project-docs/mdoc")
+addCommandAlias("ci-docs", "documentation/mdoc")
 
 val V = new {
   val circe          = "0.13.0"
@@ -57,11 +57,7 @@ lazy val `client-example` = project
     )
   )
 
-lazy val `project-docs` = (project in file(".docs"))
-  .dependsOn(petstore)
-  .aggregate(petstore)
-  .settings(moduleName := "petstore4s-project-docs")
-  .settings(mdocIn := file(".docs"))
+lazy val documentation = project
   .settings(mdocOut := file("."))
   .settings(skip in publish := true)
   .enablePlugins(MdocPlugin)
