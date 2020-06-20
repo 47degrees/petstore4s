@@ -3,7 +3,7 @@ ThisBuild / scalaVersion := "2.13.2"
 ThisBuild / skip in publish := true
 
 addCommandAlias("ci-test", "scalafmtCheckAll; scalafmtSbtCheck; test")
-addCommandAlias("ci-docs", "mdoc")
+addCommandAlias("ci-docs", "github; mdoc")
 addCommandAlias("ci-publish", "compile")
 
 lazy val protocol = project
