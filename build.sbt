@@ -13,6 +13,8 @@ lazy val protocol = project
     muSrcGenIdlTargetDir := (Compile / sourceManaged).value / "compiled_openapi",
     sourceGenerators in Compile += (Compile / muSrcGen).taskValue,
     muSrcGenOpenApiHttpImpl := higherkindness.mu.rpc.srcgen.openapi.OpenApiSrcGenerator.HttpImpl.Http4sV20,
+    addCompilerPlugin("com.github.ghik" % "silencer-plugin" % "1.6.0" cross CrossVersion.full),
+    scalacOptions += "-P:silencer:pathFilters=src_managed",
     libraryDependencies ++= Seq(
       "io.circe"   %% "circe-core"          % "0.13.0",
       "io.circe"   %% "circe-generic"       % "0.13.0",
