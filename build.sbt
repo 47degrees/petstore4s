@@ -7,7 +7,6 @@ addCommandAlias("ci-docs", "mdoc")
 
 lazy val protocol = project
   .settings(
-    moduleName := "petstore4s-client-example",
     muSrcGenIdlType := higherkindness.mu.rpc.srcgen.Model.IdlType.OpenAPI,
     muSrcGenSourceDirs := Seq((Compile / resourceDirectory).value),
     muSrcGenIdlTargetDir := (Compile / sourceManaged).value / "compiled_openapi",
@@ -24,7 +23,6 @@ lazy val protocol = project
 lazy val server = project
   .dependsOn(protocol)
   .settings(
-    moduleName := "petstore4s-server",
     libraryDependencies ++= Seq(
       "org.http4s"    %% "http4s-blaze-server" % "0.21.3",
       "org.http4s"    %% "http4s-dsl"          % "0.21.3",
@@ -35,7 +33,6 @@ lazy val server = project
 lazy val `client-example` = project
   .dependsOn(protocol, server % "test->test")
   .settings(
-    moduleName := "petstore4s-client",
     libraryDependencies ++= Seq(
       "io.chrisdavenport" %% "log4cats-slf4j"  % "1.1.1",
       "ch.qos.logback"     % "logback-classic" % "1.2.3",
