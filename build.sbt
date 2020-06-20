@@ -1,6 +1,13 @@
 ThisBuild / organization := "com.47deg"
 ThisBuild / scalaVersion := "2.13.2"
 ThisBuild / skip in publish := true
+ThisBuild / scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/47degrees/petstore4s"),
+    "scm:git:https://github.com/47degrees/petstore4s.git",
+    Some("scm:git:git@github.com:47degrees/petstore4s.git")
+  )
+)
 
 addCommandAlias("ci-test", "scalafmtCheckAll; scalafmtSbtCheck; test")
 addCommandAlias("ci-docs", "github; mdoc")
