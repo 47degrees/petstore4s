@@ -15,12 +15,10 @@ val V = new {
 
 lazy val petstore = project
   .in(file("."))
-  .settings(commonSettings)
   .dependsOn(protocol, server, `client-example`)
   .aggregate(protocol, server, `client-example`)
 
 lazy val protocol = project
-  .settings(commonSettings)
   .settings(
     moduleName := "petstore4s-client-example",
     muSrcGenIdlType := higherkindness.mu.rpc.srcgen.Model.IdlType.OpenAPI,
@@ -38,7 +36,6 @@ lazy val protocol = project
 
 lazy val server = project
   .dependsOn(protocol)
-  .settings(commonSettings)
   .settings(
     moduleName := "petstore4s-server",
     libraryDependencies ++= Seq(
@@ -50,7 +47,6 @@ lazy val server = project
 
 lazy val `client-example` = project
   .dependsOn(protocol, server % "test->test")
-  .settings(commonSettings)
   .settings(
     moduleName := "petstore4s-client",
     libraryDependencies ++= Seq(
@@ -64,26 +60,8 @@ lazy val `client-example` = project
 lazy val `project-docs` = (project in file(".docs"))
   .dependsOn(petstore)
   .aggregate(petstore)
-  .settings(commonSettings)
   .settings(moduleName := "petstore4s-project-docs")
   .settings(mdocIn := file(".docs"))
   .settings(mdocOut := file("."))
   .settings(skip in publish := true)
   .enablePlugins(MdocPlugin)
-
-lazy val commonSettings = Seq(
-  scalacOptions ++= Seq(
-    "-deprecation",
-    "-encoding",
-    "UTF-8",
-    "-feature",
-    "-language:existentials",
-    "-language:higherKinds",
-    "-language:implicitConversions",
-    "-unchecked",
-    "-Xlint",
-    "-Ywarn-dead-code",
-    "-Ywarn-numeric-widen",
-    "-Ywarn-value-discard"
-  )
-)
