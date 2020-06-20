@@ -4,15 +4,6 @@ ThisBuild / scalaVersion := "2.13.2"
 addCommandAlias("ci-test", "scalafmtCheckAll; scalafmtSbtCheck; test")
 addCommandAlias("ci-docs", "documentation/mdoc")
 
-val V = new {
-  val circe          = "0.13.0"
-  val http4s         = "0.21.3"
-  val scalatest      = "3.1.1"
-  val logbackClassic = "1.2.3"
-  val log4cats       = "1.1.1"
-  val cats           = "2.1.1"
-}
-
 lazy val petstore = project
   .in(file("."))
   .dependsOn(protocol, server, `client-example`)
@@ -27,10 +18,10 @@ lazy val protocol = project
     sourceGenerators in Compile += (Compile / muSrcGen).taskValue,
     muSrcGenOpenApiHttpImpl := higherkindness.mu.rpc.srcgen.openapi.OpenApiSrcGenerator.HttpImpl.Http4sV20,
     libraryDependencies ++= Seq(
-      "io.circe"   %% "circe-core"          % V.circe,
-      "io.circe"   %% "circe-generic"       % V.circe,
-      "org.http4s" %% "http4s-blaze-client" % V.http4s,
-      "org.http4s" %% "http4s-circe"        % V.http4s
+      "io.circe"   %% "circe-core"          % "0.13.0",
+      "io.circe"   %% "circe-generic"       % "0.13.0",
+      "org.http4s" %% "http4s-blaze-client" % "0.21.3",
+      "org.http4s" %% "http4s-circe"        % "0.21.3"
     )
   )
 
@@ -39,9 +30,9 @@ lazy val server = project
   .settings(
     moduleName := "petstore4s-server",
     libraryDependencies ++= Seq(
-      "org.http4s"    %% "http4s-blaze-server" % V.http4s,
-      "org.http4s"    %% "http4s-dsl"          % V.http4s,
-      "ch.qos.logback" % "logback-classic"     % V.logbackClassic
+      "org.http4s"    %% "http4s-blaze-server" % "0.21.3",
+      "org.http4s"    %% "http4s-dsl"          % "0.21.3",
+      "ch.qos.logback" % "logback-classic"     % "1.2.3"
     )
   )
 
@@ -50,10 +41,10 @@ lazy val `client-example` = project
   .settings(
     moduleName := "petstore4s-client",
     libraryDependencies ++= Seq(
-      "io.chrisdavenport" %% "log4cats-slf4j"  % V.log4cats,
-      "ch.qos.logback"     % "logback-classic" % V.logbackClassic,
-      "org.scalactic"     %% "scalactic"       % V.scalatest % Test,
-      "org.scalatest"     %% "scalatest"       % V.scalatest % Test
+      "io.chrisdavenport" %% "log4cats-slf4j"  % "1.1.1",
+      "ch.qos.logback"     % "logback-classic" % "1.2.3",
+      "org.scalactic"     %% "scalactic"       % "3.1.1" % Test,
+      "org.scalatest"     %% "scalatest"       % "3.1.1" % Test
     )
   )
 
