@@ -49,14 +49,14 @@ class PetstoreClientSpec extends AnyFlatSpec with TypeCheckedTripleEquals with E
 
   it should "get the pets by id" in {
     val expectedPet = pet(1, "a")
-    withClient(List(expectedPet, pet(2, "b")))(_.getPet(1).map(_.right.value should ===(expectedPet)))
+    withClient(List(expectedPet, pet(2, "b")))(_.getPet(1).map(_ should ===(Right(expectedPet))))
   }
 
   it should "not get the pets by id when the pet does not exist" in {
     withClient(List(pet(1, "a"), pet(2, "b"))) {
       _.getPet(3).map(
-        _.left.value.select[GetPetNotFoundResponseError].value should ===(
-          GetPetNotFoundResponseError("Not found pet with id: 3")
+        _.leftMap(_.select[GetPetNotFoundResponseError].value) should ===(
+          Left(GetPetNotFoundResponseError("Not found pet with id: 3"))
         )
       )
     }
@@ -87,7 +87,7 @@ class PetstoreClientSpec extends AnyFlatSpec with TypeCheckedTripleEquals with E
       for {
         _         <- client.updatePet(1, UpdatePet("tag1"))
         actualPet <- client.getPet(1)
-      } yield actualPet.right.value should ===(pet(1, "name", "tag1".some))
+      } yield actualPet should ===(Right(pet(1, "name", "tag1".some)))
     }
   }
 
@@ -96,8 +96,8 @@ class PetstoreClientSpec extends AnyFlatSpec with TypeCheckedTripleEquals with E
       for {
         _         <- client.deletePet(1)
         actualPet <- client.getPet(1)
-      } yield actualPet.left.value.select[GetPetNotFoundResponseError].value should ===(
-        GetPetNotFoundResponseError("Not found pet with id: 1")
+      } yield actualPet.leftMap(_.select[GetPetNotFoundResponseError].value) should ===(
+        Left(GetPetNotFoundResponseError("Not found pet with id: 1"))
       )
     }
   }

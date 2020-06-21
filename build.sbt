@@ -1,90 +1,56 @@
+ThisBuild / organization := "com.47deg"
+ThisBuild / scalaVersion := "2.13.2"
+ThisBuild / skip in publish := true
+ThisBuild / scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/47degrees/petstore4s"),
+    "scm:git:https://github.com/47degrees/petstore4s.git",
+    Some("scm:git:git@github.com:47degrees/petstore4s.git")
+  )
+)
+
 addCommandAlias("ci-test", "scalafmtCheckAll; scalafmtSbtCheck; test")
-addCommandAlias("ci-docs", "project-docs/mdoc")
-
-val V = new {
-  val circe          = "0.13.0"
-  val http4s         = "0.21.3"
-  val scalatest      = "3.1.1"
-  val logbackClassic = "1.2.3"
-  val log4cats       = "1.1.1"
-  val cats           = "2.1.1"
-  val scala          = "2.13.1"
-}
-
-lazy val petstore = project
-  .in(file("."))
-  .settings(commonSettings)
-  .dependsOn(protocol, server, `client-example`)
-  .aggregate(protocol, server, `client-example`)
+addCommandAlias("ci-docs", "github; mdoc")
+addCommandAlias("ci-publish", "compile")
 
 lazy val protocol = project
-  .settings(commonSettings)
   .settings(
-    moduleName := "petstore4s-client-example",
     muSrcGenIdlType := higherkindness.mu.rpc.srcgen.Model.IdlType.OpenAPI,
     muSrcGenSourceDirs := Seq((Compile / resourceDirectory).value),
     muSrcGenIdlTargetDir := (Compile / sourceManaged).value / "compiled_openapi",
     sourceGenerators in Compile += (Compile / muSrcGen).taskValue,
     muSrcGenOpenApiHttpImpl := higherkindness.mu.rpc.srcgen.openapi.OpenApiSrcGenerator.HttpImpl.Http4sV20,
+    addCompilerPlugin("com.github.ghik" % "silencer-plugin" % "1.6.0" cross CrossVersion.full),
+    scalacOptions += "-P:silencer:pathFilters=src_managed",
     libraryDependencies ++= Seq(
-      "io.circe"   %% "circe-core"          % V.circe,
-      "io.circe"   %% "circe-generic"       % V.circe,
-      "org.http4s" %% "http4s-blaze-client" % V.http4s,
-      "org.http4s" %% "http4s-circe"        % V.http4s
+      "io.circe"   %% "circe-core"          % "0.13.0",
+      "io.circe"   %% "circe-generic"       % "0.13.0",
+      "org.http4s" %% "http4s-blaze-client" % "0.21.3",
+      "org.http4s" %% "http4s-circe"        % "0.21.3"
     )
   )
 
 lazy val server = project
   .dependsOn(protocol)
-  .settings(commonSettings)
   .settings(
-    moduleName := "petstore4s-server",
     libraryDependencies ++= Seq(
-      "org.http4s"    %% "http4s-blaze-server" % V.http4s,
-      "org.http4s"    %% "http4s-dsl"          % V.http4s,
-      "ch.qos.logback" % "logback-classic"     % V.logbackClassic
+      "org.http4s"    %% "http4s-blaze-server" % "0.21.3",
+      "org.http4s"    %% "http4s-dsl"          % "0.21.3",
+      "ch.qos.logback" % "logback-classic"     % "1.2.3"
     )
   )
 
 lazy val `client-example` = project
   .dependsOn(protocol, server % "test->test")
-  .settings(commonSettings)
   .settings(
-    moduleName := "petstore4s-client",
     libraryDependencies ++= Seq(
-      "io.chrisdavenport" %% "log4cats-slf4j"  % V.log4cats,
-      "ch.qos.logback"     % "logback-classic" % V.logbackClassic,
-      "org.scalactic"     %% "scalactic"       % V.scalatest % Test,
-      "org.scalatest"     %% "scalatest"       % V.scalatest % Test
+      "io.chrisdavenport" %% "log4cats-slf4j"  % "1.1.1",
+      "ch.qos.logback"     % "logback-classic" % "1.2.3",
+      "org.scalactic"     %% "scalactic"       % "3.1.1" % Test,
+      "org.scalatest"     %% "scalatest"       % "3.1.1" % Test
     )
   )
 
-lazy val `project-docs` = (project in file(".docs"))
-  .dependsOn(petstore)
-  .aggregate(petstore)
-  .settings(commonSettings)
-  .settings(moduleName := "petstore4s-project-docs")
-  .settings(mdocIn := file(".docs"))
+lazy val documentation = project
   .settings(mdocOut := file("."))
-  .settings(skip in publish := true)
   .enablePlugins(MdocPlugin)
-
-lazy val commonSettings = Seq(
-  organization := "com.47deg",
-  scalaVersion := V.scala,
-  scalacOptions ++= Seq(
-    "-deprecation",
-    "-encoding",
-    "UTF-8",
-    "-feature",
-    "-language:existentials",
-    "-language:higherKinds",
-    "-language:implicitConversions",
-    "-unchecked",
-    "-Xlint",
-    "-Ywarn-dead-code",
-    "-Ywarn-numeric-widen",
-    "-Ywarn-value-discard"
-  ),
-  scalafmtOnCompile := true
-)
