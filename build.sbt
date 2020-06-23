@@ -20,7 +20,7 @@ lazy val protocol = project
     muSrcGenIdlTargetDir := (Compile / sourceManaged).value / "compiled_openapi",
     sourceGenerators in Compile += (Compile / muSrcGen).taskValue,
     muSrcGenOpenApiHttpImpl := higherkindness.mu.rpc.srcgen.openapi.OpenApiSrcGenerator.HttpImpl.Http4sV20,
-    addCompilerPlugin("com.github.ghik" % "silencer-plugin" % "1.6.0" cross CrossVersion.full),
+    addCompilerPlugin("com.github.ghik" % "silencer-plugin" % "1.7.0" cross CrossVersion.full),
     scalacOptions += "-P:silencer:pathFilters=src_managed",
     libraryDependencies ++= Seq(
       "io.circe"   %% "circe-core"          % "0.13.0",
@@ -46,8 +46,8 @@ lazy val `client-example` = project
     libraryDependencies ++= Seq(
       "io.chrisdavenport" %% "log4cats-slf4j"  % "1.1.1",
       "ch.qos.logback"     % "logback-classic" % "1.2.3",
-      "org.scalactic"     %% "scalactic"       % "3.1.2" % Test,
-      "org.scalatest"     %% "scalatest"       % "3.1.1" % Test
+      "org.scalactic"     %% "scalactic"       % "3.1.1" % Test,
+      "org.scalatest"     %% "scalatest"       % "3.1.2" % Test
     )
   )
 
