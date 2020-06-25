@@ -1,6 +1,6 @@
 addSbtPlugin("io.higherkindness"         % "sbt-mu-srcgen"     % "0.22.2")
 addSbtPlugin("org.scalameta"             % "sbt-scalafmt"      % "2.4.0")
-addSbtPlugin("org.scalameta"             % "sbt-mdoc"          % "2.2.2")
+addSbtPlugin("org.scalameta"             % "sbt-mdoc"          % "2.2.3")
 addSbtPlugin("de.heikoseeberger"         % "sbt-header"        % "5.6.0")
 addSbtPlugin("com.alejandrohdezma"       % "sbt-github"        % "0.8.2")
 addSbtPlugin("com.alejandrohdezma"       % "sbt-github-header" % "0.8.2")
