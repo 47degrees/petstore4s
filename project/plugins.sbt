@@ -1,4 +1,4 @@
-addSbtPlugin("io.higherkindness"         % "sbt-mu-srcgen"     % "0.22.2")
+addSbtPlugin("io.higherkindness"         % "sbt-mu-srcgen"     % "0.22.3")
 addSbtPlugin("org.scalameta"             % "sbt-scalafmt"      % "2.4.0")
 addSbtPlugin("org.scalameta"             % "sbt-mdoc"          % "2.2.3")
 addSbtPlugin("de.heikoseeberger"         % "sbt-header"        % "5.6.0")
