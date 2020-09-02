@@ -28,7 +28,8 @@ lazy val protocol = project
       "org.http4s" %% "http4s-blaze-client" % "0.21.3",
       "org.http4s" %% "http4s-circe"        % "0.21.3"
     )
-  ).enablePlugins(SrcGenPlugin)
+  )
+  .enablePlugins(SrcGenPlugin)
 
 lazy val server = project
   .dependsOn(protocol)
