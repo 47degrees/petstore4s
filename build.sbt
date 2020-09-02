@@ -1,5 +1,5 @@
 ThisBuild / organization := "com.47deg"
-ThisBuild / scalaVersion := "2.13.2"
+ThisBuild / scalaVersion := "2.13.3"
 ThisBuild / skip in publish := true
 ThisBuild / scmInfo := Some(
   ScmInfo(
@@ -28,7 +28,7 @@ lazy val protocol = project
       "org.http4s" %% "http4s-blaze-client" % "0.21.3",
       "org.http4s" %% "http4s-circe"        % "0.21.3"
     )
-  )
+  ).enablePlugins(SrcGenPlugin)
 
 lazy val server = project
   .dependsOn(protocol)
