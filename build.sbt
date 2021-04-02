@@ -47,7 +47,7 @@ lazy val `client-example` = project
     libraryDependencies ++= Seq(
       "io.chrisdavenport" %% "log4cats-slf4j"  % "1.1.1",
       "ch.qos.logback"     % "logback-classic" % "1.2.3",
-      "org.scalactic"     %% "scalactic"       % "3.2.6" % Test,
+      "org.scalactic"     %% "scalactic"       % "3.2.7" % Test,
       "org.scalatest"     %% "scalatest"       % "3.2.6" % Test
     )
   )
