@@ -23,10 +23,10 @@ lazy val protocol = project
     addCompilerPlugin("com.github.ghik" % "silencer-plugin" % "1.7.4" cross CrossVersion.full),
     scalacOptions += "-P:silencer:pathFilters=src_managed",
     libraryDependencies ++= Seq(
-      "io.circe"   %% "circe-core"          % "0.13.0",
-      "io.circe"   %% "circe-generic"       % "0.13.0",
-      "org.http4s" %% "http4s-blaze-client" % "0.21.24",
-      "org.http4s" %% "http4s-circe"        % "0.21.24"
+      "io.circe"   %% "circe-core"          % "0.14.1",
+      "io.circe"   %% "circe-generic"       % "0.14.1",
+      "org.http4s" %% "http4s-blaze-client" % "0.21.3",
+      "org.http4s" %% "http4s-circe"        % "0.21.3"
     )
   )
   .enablePlugins(SrcGenPlugin)
