@@ -25,8 +25,8 @@ lazy val protocol = project
     libraryDependencies ++= Seq(
       "io.circe"   %% "circe-core"          % "0.14.1",
       "io.circe"   %% "circe-generic"       % "0.14.1",
-      "org.http4s" %% "http4s-blaze-client" % "0.21.3",
-      "org.http4s" %% "http4s-circe"        % "0.21.3"
+      "org.http4s" %% "http4s-blaze-client" % "0.21.24",
+      "org.http4s" %% "http4s-circe"        % "0.21.24"
     )
   )
   .enablePlugins(SrcGenPlugin)
