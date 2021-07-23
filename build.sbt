@@ -35,9 +35,9 @@ lazy val server = project
   .dependsOn(protocol)
   .settings(
     libraryDependencies ++= Seq(
-      "org.http4s"    %% "http4s-blaze-server" % "0.21.25",
-      "org.http4s"    %% "http4s-dsl"          % "0.21.25",
-      "ch.qos.logback" % "logback-classic"     % "1.2.3"
+      "org.http4s"    %% "http4s-blaze-server" % "0.21.3",
+      "org.http4s"    %% "http4s-dsl"          % "0.21.3",
+      "ch.qos.logback" % "logback-classic"     % "1.2.4"
     )
   )
 
@@ -46,7 +46,7 @@ lazy val `client-example` = project
   .settings(
     libraryDependencies ++= Seq(
       "io.chrisdavenport" %% "log4cats-slf4j"  % "1.1.1",
-      "ch.qos.logback"     % "logback-classic" % "1.2.3",
+      "ch.qos.logback"     % "logback-classic" % "1.2.4",
       "org.scalactic"     %% "scalactic"       % "3.2.9" % Test,
       "org.scalatest"     %% "scalatest"       % "3.2.9" % Test
     )
