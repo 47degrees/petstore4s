@@ -1,5 +1,5 @@
-ThisBuild / organization := "com.47deg"
-ThisBuild / scalaVersion := "2.13.3"
+ThisBuild / organization    := "com.47deg"
+ThisBuild / scalaVersion    := "2.13.3"
 ThisBuild / skip in publish := true
 ThisBuild / scmInfo := Some(
   ScmInfo(
@@ -15,8 +15,8 @@ addCommandAlias("ci-publish", "compile")
 
 lazy val protocol = project
   .settings(
-    muSrcGenIdlType := higherkindness.mu.rpc.srcgen.Model.IdlType.OpenAPI,
-    muSrcGenSourceDirs := Seq((Compile / resourceDirectory).value),
+    muSrcGenIdlType      := higherkindness.mu.rpc.srcgen.Model.IdlType.OpenAPI,
+    muSrcGenSourceDirs   := Seq((Compile / resourceDirectory).value),
     muSrcGenIdlTargetDir := (Compile / sourceManaged).value / "compiled_openapi",
     sourceGenerators in Compile += (Compile / muSrcGen).taskValue,
     muSrcGenOpenApiHttpImpl := higherkindness.mu.rpc.srcgen.openapi.OpenApiSrcGenerator.HttpImpl.Http4sV20,
