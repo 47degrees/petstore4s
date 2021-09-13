@@ -35,8 +35,8 @@ lazy val server = project
   .dependsOn(protocol)
   .settings(
     libraryDependencies ++= Seq(
-      "org.http4s"    %% "http4s-blaze-server" % "0.21.3",
-      "org.http4s"    %% "http4s-dsl"          % "0.21.3",
+      "org.http4s"    %% "http4s-blaze-server" % "0.21.28",
+      "org.http4s"    %% "http4s-dsl"          % "0.21.28",
       "ch.qos.logback" % "logback-classic"     % "1.2.6"
     )
   )
