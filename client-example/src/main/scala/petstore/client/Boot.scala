@@ -18,8 +18,8 @@ package petstore
 package client
 
 import cats.effect._
-import io.chrisdavenport.log4cats.SelfAwareStructuredLogger
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.SelfAwareStructuredLogger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.implicits._
 import petstore.models.{NewPet, UpdatePet}
