@@ -45,7 +45,7 @@ lazy val `client-example` = project
   .dependsOn(protocol, server % "test->test")
   .settings(
     libraryDependencies ++= Seq(
-      "io.chrisdavenport" %% "log4cats-slf4j"  % "1.1.1",
+      "org.typelevel" %% "log4cats-slf4j"  % "1.2.0",
       "ch.qos.logback"     % "logback-classic" % "1.2.6",
       "org.scalactic"     %% "scalactic"       % "3.2.9" % Test,
       "org.scalatest"     %% "scalatest"       % "3.2.9" % Test
