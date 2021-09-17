@@ -1,5 +1,5 @@
 ThisBuild / organization    := "com.47deg"
-ThisBuild / scalaVersion    := "2.13.3"
+ThisBuild / scalaVersion    := "2.13.6"
 ThisBuild / skip in publish := true
 ThisBuild / scmInfo := Some(
   ScmInfo(
